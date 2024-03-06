@@ -9,9 +9,9 @@ jQuery(document).ready(function ($) {
             type: "POST",
             url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
             data: form.serialize(), // serializes the form's elements.
-            success: function(data)
+            success: function()
             {
-              alert(data); // show response from the php script.
+                location.reload();
             }
         });
     });
@@ -24,9 +24,9 @@ jQuery(document).ready(function ($) {
             type: "POST",
             url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
             data: form.serialize(),
-            success: function(data)
+            success: function()
             {
-              alert(data); // show response from the php script.
+                location.reload();
             }
         });
     });
@@ -39,10 +39,15 @@ jQuery(document).ready(function ($) {
             type: "POST",
             url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
             data: form.serialize(),
-            success: function(data)
+            success: function()
             {
-              alert(data); // show response from the php script.
+                location.reload();
             }
         });
+    });
+
+    $('#ebsum_setting_button').click(function () {
+        $('.ebsum_settings').css("display", "block");
+
     });
 });

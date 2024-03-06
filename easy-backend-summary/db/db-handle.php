@@ -1,12 +1,12 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 require('../../../../wp-load.php');
 
-var_dump ($_POST);
-echo implode(" ", $_POST);
+// var_dump ($_POST);
+// echo implode(" ", $_POST);
 
 //function to check POST for value to setting
 function check_post ($array, $value){
@@ -26,10 +26,8 @@ if(check_post($_POST, 'posttype')){
     
     set_settings($_POST, 'set_userroles', 'set_userroles');
 }elseif (isset($_POST['period'])){
-    echo "Period";
     set_settings($_POST, 'check_period', '');
 }elseif (isset($_POST['Quantity'])){
-    echo "Quantity";
     set_settings($_POST, 'max_view', '');
 }
 

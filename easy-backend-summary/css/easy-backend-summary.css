@@ -4,3 +4,6 @@
 .ebsum_button{
     width: 5.5rem;
 }
+.ebsum_settings{
+    display:none;
+}

@@ -22,6 +22,11 @@ function farn_enqueueScriptsAndStyles(){
 
 add_action('admin_enqueue_scripts',  'farn_enqueueScriptsAndStyles');
 
+add_action( 'wp_ajax_show_posts', 'show_posts' );
+add_action( 'wp_ajax_nopriv_show_posts', 'show_posts' );
+add_action( 'wp_ajax_show_user', 'show_user' );
+add_action( 'wp_ajax_nopriv_show_user', 'show_user' );
+
 //-----------------------------Requirements-----------------------------
 
 // require_once ('../wp-content/plugins/easy-backend-summary/db/db-handle.php');
@@ -53,7 +58,7 @@ $sql = "CREATE TABLE IF NOT EXISTS " . $ebsum . "(
     set_userroles   text,
     max_overwiev    int,
     max_view        int,
-    check_period    int,
+    check_period    date,
     PRIMARY KEY (set_ID)
 )$charset;";
 
@@ -69,14 +74,35 @@ register_activation_hook(__FILE__, 'create_database');
 
 //setting all functions to show
 function easy_backend_summary_funktion() {
-    echo set_period();
-    echo setup_posttypes();
-    echo setup_userroles();
+
     set_last_login();
-    echo set_quantity();
-    echo show_posts();
-    echo show_user();
+    ?> 
+    <div class="ebsum_shown">
     
+    <?php
+    echo set_period();?> 
+    <h3><strong>Posttypes</strong></h3>
+    <?php
+    echo show_posts();?> 
+    <h3><strong>Userollen</strong></h3>
+    <?php
+    echo show_user();
+    ?> 
+    
+    </div>
+    <input type="button" id="ebsum_setting_button" class="" value="Einstellungen">
+    <div class="ebsum_settings">
+    
+    <?php
+    echo setup_posttypes();?> 
+    <?php
+    echo setup_userroles();?> 
+    <?php
+    echo set_quantity();
+    ?> 
+    
+    </div>
+    <?php
 }
 
 
@@ -109,9 +135,10 @@ function createPostTypeSetting($types,$name) {
         };
     }
 
-    
+    $posttype_setting .= '<input class="button button-primary ebsum_button" type="submit" name=" " value="submit"><br>';
     $posttype_setting .= '</form></ul>';
-    $posttype_setting .= '<input class="button button-primary ebsum_button" "type="submit" name=" " value="Speichern"><br>';
+    
+    
 
     return $posttype_setting;
 }
@@ -168,14 +195,20 @@ function set_last_login(){
 
 //function to set the shown period
 function set_period(){
+    $timestamp = get_sets('last_login');
+    $lastlogin = gmdate("Y-m-d", $timestamp[0]);
+    $today = date("Y-m-d");
+    $lastweek = date("Y-m-d", strtotime('-7 day'));
+    $lastmonth = date("Y-m-d", strtotime('-30 day'));
+    $whole = 0;
 
     ?>
         <label class="period_time" for="period">Period to check:</label>
-        <select lass="period_time" name="period" id="periods">
-        <option lass="period_time" value=0>Seit dem letzten Login</option>
-        <option lass="period_time" value=1>Innerhalb der letzen 7 Tage</option>
-        <option lass="period_time" value=2>Innerhalb der letzen 30 Tage</option>
-        <option lass="period_time" value=3>Gesamter Zeitraum</option>
+        <select class="period_time" name="period" id="periods">
+        <option class="period_time" value=<?php echo $lastlogin ?>>Seit dem letzten Login</option>
+        <option class="period_time" value=<?php echo $lastweek ?>>Innerhalb der letzen 7 Tage</option>
+        <option class="period_time" value=<?php echo $lastmonth ?>>Innerhalb der letzen 30 Tage</option>
+        <option class="period_time" value=<?php echo $whole ?>>Gesamter Zeitraum</option>
         </select>
         <br>
     <?php
@@ -187,7 +220,7 @@ function set_quantity(){
     $max_view = get_sets('max_view');
     ?>
         <label class="quantity" for="Quantity">Quantity to show:</label>
-        <input type="number" min="1" max="10" name="Quantity" stept="1" id="quantitys" default="3" value="<?php echo $max_view[0]; ?>">
+        <input type="number" min="1" max="100" name="Quantity" stept="1" id="quantitys" default="3" value="<?php echo $max_view[0]; ?>">
         <br>
     <?php
 }
@@ -210,8 +243,8 @@ return $datas;
 function show_posts(){
     $to_check = get_sets('set_posttypes');
     $limit = get_sets('max_view');
-    $timestamp = get_sets('last_login');
-    $start = gmdate("Y-m-d", $timestamp[0]);
+    $start = get_sets('check_period');
+    $start = date("d-m-Y", strtotime($start[0]));
     $end = date("Y-m-d");
 
     foreach($to_check as $check){
@@ -223,7 +256,7 @@ function show_posts(){
             'orderby'                => 'post_date',
             'date_query'             => array(
                                         array(
-                                        // 'after'     => $start,
+                                        'after'     => $start,
                                         'before'    => $end,
                                         'inclusive' => true,
                                 ),
@@ -232,7 +265,7 @@ function show_posts(){
         $post_query = new WP_Query( $args );
 
         if ( $post_query->have_posts() ) {
-            echo '<h3><strong>'.$check.'</strong></h3>';
+            echo '<h4>'.$check.'</h4>';
             echo '<ul id="ebsum_'.$check.'">';
             while ( $post_query->have_posts() ) {
                 $post_query->the_post();
@@ -245,6 +278,7 @@ function show_posts(){
         
     }
     
+    
 }
 
 // set function to show the user by roles
@@ -252,7 +286,7 @@ function show_user(){
     $to_check = get_sets('set_userroles');
     $limit = get_sets('max_view');
     $timestamp = get_sets('last_login');
-    $start = gmdate("Y-m-d", $timestamp[0]);
+    $start = get_sets('check_period');
     $end = date("Y-m-d");
 
     foreach($to_check as $check){
@@ -264,17 +298,17 @@ function show_user(){
             'orderby'         =>    'user_registered',
             'date_query'             => array(
                                         array(
-                                        // 'after'     => $start,
+                                        'after'     => $start[0],
                                         'before'    => $end,
                                         'inclusive' => true,
                                 ),
                             ),
         );
         $users = get_users( $args );
-        echo '<h3><strong>'.$check.'</strong></h3>';
+        echo '<h4>'.$check.'</h4>';
         echo '<ul>';
             foreach ( $users as $user ) {
-                echo '<li><a href="users.php?s='.$user->ID.'">' .esc_html($user->user_registered). 
+                echo '<li><a href="users.php?s='.$user->ID.'">' .esc_html($user->user_registered).' '.
                 esc_html( $user->display_name ) . '[' . esc_html( $user->user_email ) . ']'.esc_html( $user->user_url ).'</a></li>';
             }
         echo '</ul>';
