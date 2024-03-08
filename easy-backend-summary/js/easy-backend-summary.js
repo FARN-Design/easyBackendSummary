@@ -47,7 +47,17 @@ jQuery(document).ready(function ($) {
     });
 
     $('#ebsum_setting_button').click(function () {
-        $('.ebsum_settings').css("display", "block");
+        $('.ebsum_setting_wrapper').toggle();
+
+    });
+
+    $('.setting_posttypes_wrapper').click(function () {
+        $('.setting_posttypes').toggle();
+
+    });
+
+    $('.setting_userolles_wrapper').click(function () {
+        $('.setting_userroles').toggle();
 
     });
 });

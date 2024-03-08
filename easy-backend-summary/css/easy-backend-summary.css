@@ -1,9 +1,64 @@
+
+
+#easy_backend_summary .inside{
+    padding: 0;
+    margin: 0;
+}
+
+#easy_backend_summary li:nth-child(odd) { 
+    background: #f0f6fc; }
+
 .ebs-ul{
     column-count: 2;
+}
+
+.ebsum_head_settings{
+    display: flex;
+    margin: 0;
+    background-color: #fafafa;
+    padding: 2.5%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ebsum_button_wrapper{
+    text-align: end;
 }
 .ebsum_button{
     width: 5.5rem;
 }
-.ebsum_settings{
+.ebsum_setting_wrapper{
+    padding: 2.5%;
     display:none;
+}
+
+.ebsum_show_wrapper{
+    padding: 2.5%;
+    border-bottom: 2px solid rgba(0, 0, 0, .5);
+}
+
+#ebsum_setting_button{
+    margin: 10px;
+    margin-right: 0;
+}
+
+.ebsum_show_lis{
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+}
+
+.ebsum_show_lis:last-of-type{
+    border-bottom: none;
+}
+
+.setting_posttypes{
+    padding: 0 2.5% 2.5% 2.5%;
+    display: none;
+}
+
+.setting_wrapper_wrapper{
+    padding:  2.5% 2.5% 0 2.5%;
+    display: flex;
+    justify-content: space-between;
+
+    align-items: center;
 }

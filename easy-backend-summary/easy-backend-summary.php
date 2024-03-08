@@ -57,10 +57,11 @@ $sql = "CREATE TABLE IF NOT EXISTS " . $ebsum . "(
     set_posttypes   text,
     set_userroles   text,
     max_overwiev    int,
-    max_view        int,
-    check_period    date,
+    max_view        int DEFAULT 3,
+    check_period    text,
     PRIMARY KEY (set_ID)
 )$charset;";
+
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -74,33 +75,45 @@ register_activation_hook(__FILE__, 'create_database');
 
 //setting all functions to show
 function easy_backend_summary_funktion() {
-
+    
+    
     set_last_login();
     ?> 
-    <div class="ebsum_shown">
+    <div class="ebsum_wrapper">
+
     
+    <div class="ebsum_head_settings">
     <?php
-    echo set_period();?> 
+        echo set_changelog();
+        echo set_period();
+     ?> 
+    </div>
+    <div class="ebsum_show_wrapper">
     <h3><strong>Posttypes</strong></h3>
-    <?php
-    echo show_posts();?> 
+    <?php echo show_posts();?> 
     <h3><strong>Userollen</strong></h3>
-    <?php
-    echo show_user();
-    ?> 
+    <?php echo show_user();?> 
     
     </div>
-    <input type="button" id="ebsum_setting_button" class="" value="Einstellungen">
-    <div class="ebsum_settings">
     
-    <?php
-    echo setup_posttypes();?> 
-    <?php
-    echo setup_userroles();?> 
-    <?php
-    echo set_quantity();
-    ?> 
+    <div class="setting_wrapper_wrapper">
     
+    <span class="setting_posttypes_wrapper">+ weitere Kategorien hinzufügen</span>
+    <button type="button" id="ebsum_setting_button"><span class="dashicons dashicons-admin-generic"></span></button>
+    
+    
+    </div>
+    <div class="setting_posttypes"> <?php echo setup_postsanduser();?>     </div>
+    
+
+    
+
+    <div class="ebsum_setting_wrapper">
+    <div class="setting_main">      <?php echo set_quantity(); ?>       </div>
+
+    
+    
+    </div>
     </div>
     <?php
 }
@@ -109,16 +122,18 @@ function easy_backend_summary_funktion() {
 //-----------------------------setting the Post Functions-----------------------------
 
 //create function for looping the trough the array and make for each value an checkbox in an table
-function createPostTypeSetting($types,$name) {
+function createPostTypeSetting($types,$name, $roles, $rolenames) {
     $user_id = get_current_user_id( );
-    $posttype_setting  = '<strong>Einstellung der '.$name.'</strong>';
-    $posttype_setting .= '<ul class="ebs-ul"><form class="ebsum-class" ID="'.$user_id.'" method="POST" action="" name="ebsum_set">';
-    $to_check = get_sets($name);
+    
+    $posttype_setting = '<ul class="ebs-ul"><form class="ebsum-class" ID="'.$user_id.'" method="POST" action="" name="ebsum_set">';
+    $posttype_setting .= '<strong>Posttypes</strong>';
+    $to_check_posts = get_sets($name);
+    $to_check_roles = get_sets($rolenames);
     foreach($types as $type){
         $type = trim($type);
 
         $checked = "";
-        foreach($to_check as $check){
+        foreach($to_check_posts as $check){
             $check = trim($check);
             if($type == $check ){
                 $checked = "checked";
@@ -134,10 +149,31 @@ function createPostTypeSetting($types,$name) {
             echo "'".$type."is checked'<br>";
         };
     }
+     $posttype_setting .= "<br> <strong>Userrolles</strong>";
+    foreach($roles as $role){
+        $role = trim($role);
 
-    $posttype_setting .= '<input class="button button-primary ebsum_button" type="submit" name=" " value="submit"><br>';
+        $checked = "";
+        foreach($to_check_roles as $check){
+            $check = trim($check);
+            if($role == $check ){
+                $checked = "checked";
+                break;
+            }
+        }
+
+
+        $posttype_setting .= '<li><input type="checkbox" id="postytpe'.$role.'" name="'.$rolenames.' '.$role.'" value="'.$rolenames.' '.$role.'"'.$checked.'>';
+        $posttype_setting .= '<label for="postytpe'.$role.'">'.$role.'</label></li>';
+
+        if(isset($_POST[$role])){
+            echo "'".$role."is checked'<br>";
+        };
+    }
+
+   
     $posttype_setting .= '</form></ul>';
-    
+    $posttype_setting .= '<div class="ebsum_button_wrapper"><input form="'.$user_id.'" class="button button-primary ebsum_button" type="submit" name=" " value="submit"></div><br>';
     
 
     return $posttype_setting;
@@ -145,20 +181,15 @@ function createPostTypeSetting($types,$name) {
 
 
 // setup for the posttypes
-function setup_posttypes(){
+function setup_postsanduser(){
     $types = get_post_types();
-
-    echo createPostTypeSetting($types, "set_posttypes");
-    
-}
-
-// setup for the userroles
-function setup_userroles(){
     global $wp_roles;
     $roles =$wp_roles->get_names();
+
+    echo createPostTypeSetting($types, "set_posttypes", $roles, "set_userroles");
     
-    echo createPostTypeSetting($roles, "set_userroles");
 }
+
 
 
 //function to set the last login time (checks if user id allready set and then saves the last login time)
@@ -172,9 +203,8 @@ function set_last_login(){
 
     $check_user_ID = $wpdb->get_row( "SELECT `user_ID` FROM `uPQ3q_easyBackendSummary` WHERE `user_ID` = $user_id");
 
-    $check_user_ID = $check_user_ID->user_ID;
-
-    if($check_user_ID != $user_id){
+    if(isset($check_user_ID->user_ID)){
+    if($check_user_ID->user_ID != $user_id){
     $wpdb->insert(
         $ebsum,
         [
@@ -189,29 +219,39 @@ function set_last_login(){
                 ['user_ID'      =>  $user_id]  
             
         );}
+    }else{
+        $wpdb->insert(
+            $ebsum,
+            [
+                'user_ID'           =>  $user_id,
+                'last_login'        =>  $now,
+            ]
+        );
+    }
     }
 
 
 
 //function to set the shown period
 function set_period(){
-    $timestamp = get_sets('last_login');
-    $lastlogin = gmdate("Y-m-d", $timestamp[0]);
-    $today = date("Y-m-d");
-    $lastweek = date("Y-m-d", strtotime('-7 day'));
-    $lastmonth = date("Y-m-d", strtotime('-30 day'));
-    $whole = 0;
+    $period = get_sets('check_period');
+    $lastlogin = "lastlogin";
+    $today = "today";
+    $lastweek = "lastweek";
+    $lastmonth = "lastmonth";
+    $whole = "whole";
 
     ?>
-        <label class="period_time" for="period">Period to check:</label>
+        
         <select class="period_time" name="period" id="periods">
-        <option class="period_time" value=<?php echo $lastlogin ?>>Seit dem letzten Login</option>
-        <option class="period_time" value=<?php echo $lastweek ?>>Innerhalb der letzen 7 Tage</option>
-        <option class="period_time" value=<?php echo $lastmonth ?>>Innerhalb der letzen 30 Tage</option>
-        <option class="period_time" value=<?php echo $whole ?>>Gesamter Zeitraum</option>
+        <option class="period_time" value="<?php echo $lastlogin ?>" <?php if(trim($period[0])==$lastlogin){echo ' selected';} ?>>Seit dem letzten Login</option>
+        <option class="period_time" value="<?php echo $lastweek ?>" <?php if(trim($period[0])==$lastweek){echo ' selected';} ?>>Innerhalb der letzen 7 Tage</option>
+        <option class="period_time" value="<?php echo $lastmonth ?>" <?php if(trim($period[0])==$lastmonth){echo ' selected';} ?>>Innerhalb der letzen 30 Tage</option>
+        <option class="period_time" value="<?php echo $whole ?>" <?php if(trim($period[0])==$whole){echo ' selected';} ?>>Gesamter Zeitraum</option>
         </select>
         <br>
     <?php
+
 
 }
 
@@ -223,6 +263,21 @@ function set_quantity(){
         <input type="number" min="1" max="100" name="Quantity" stept="1" id="quantitys" default="3" value="<?php echo $max_view[0]; ?>">
         <br>
     <?php
+}
+
+function set_changelog(){
+
+    ?>
+        
+        <form action="">
+        <input type="checkbox" id="changes" name="chanes" value="changes">
+        <label for="changes">Änderungen</label>
+        <input type="checkbox" id="new" name="new" value="new">
+        <label for="new">Neu</label>
+        </form>
+
+    <?php
+
 }
 
 //-----------------------------setting the Get Functions-----------------------------
@@ -239,80 +294,136 @@ $datas = explode(";", $datas);
 return $datas;
 }
 
+
+function check_period(){
+
+    $timestamp = get_sets('last_login');
+
+    $period = get_sets('check_period');
+    $start = "";
+    $end = date("Y-m-d");
+
+     switch ($period[0]) {
+        case 'lastlogin':
+            $start = gmdate("Y-m-d", $timestamp[0]);
+            break;
+        case 'lastweek':
+            $start = date("Y-m-d", strtotime('-7 day'));
+            break;
+        case 'lastmonth':
+            $start = date("Y-m-d", strtotime('-30 day'));
+            break;
+        case 'whole':
+            $start = "0000-00-00";
+            break;
+        default:
+            echo "Ungültige Auswahl.";
+    }
+
+    return $start;
+
+}
+
 // set function to show the post by posttype
 function show_posts(){
     $to_check = get_sets('set_posttypes');
-    $limit = get_sets('max_view');
-    $start = get_sets('check_period');
-    $start = date("d-m-Y", strtotime($start[0]));
-    $end = date("Y-m-d");
-
-    foreach($to_check as $check){
-        $check = trim($check);
-        $args = array(
-            'post_type' => $check,
-            'posts_per_page'         => $limit[0],
-            'order'                  => 'DESC',
-            'orderby'                => 'post_date',
-            'date_query'             => array(
-                                        array(
-                                        'after'     => $start,
-                                        'before'    => $end,
-                                        'inclusive' => true,
-                                ),
-                            ),
-        );
-        $post_query = new WP_Query( $args );
-
-        if ( $post_query->have_posts() ) {
-            echo '<h4>'.$check.'</h4>';
-            echo '<ul id="ebsum_'.$check.'">';
-            while ( $post_query->have_posts() ) {
-                $post_query->the_post();
-                echo '<li><a href="'.get_permalink().'">' .get_the_date()."     " . esc_html( get_the_title() ) . 
-                
-                '</a></li>';
-            }
-            echo '</ul>';
-        }
-        
-    }
     
+
+    if($to_check[0]){
+            
+        $limit = get_sets('max_view');
+        $start = check_period();
+        $end = date("Y-m-d");
+
+
+        foreach($to_check as $check){
+            $check = trim($check);
+            $args = array(
+                'post_type' => $check,
+                'posts_per_page'         => $limit[0],
+                'order'                  => 'DESC',
+                'orderby'                => 'post_date',
+                'date_query'             => array(
+                                            array(
+                                            'after'     => $start,
+                                            'before'    => $end,
+                                            'inclusive' => true,
+                                    ),
+                                ),
+            );
+            $post_query = new WP_Query( $args );
+
+            if ( $post_query->have_posts() ) {
+                echo '<h4>'.$check.'</h4>';
+                echo '<ul class="ebsum_show_lis" id="ebsum_'.$check.'">';
+                while ( $post_query->have_posts() ) {
+                    $post_query->the_post();
+                    echo '<li><a href="'.get_permalink().'">' .get_the_date()."     " . esc_html( get_the_title() ) . 
+                    
+                    '</a></li>';
+                }
+                echo '</ul>';
+            } else{
+                echo '<h4>'.$check.'</h4>';
+                echo '<ul class="ebsum_show_lis" id="ebsum_'.$check.'">';
+                echo "Es sind keine aktuellen Änderungen vorhanden";
+                echo '</ul>';
+            }
+            
+        }
+    }
+    else {
+        echo "Bitte wählen Sie einen Posttype aus";
+    }
     
 }
 
 // set function to show the user by roles
 function show_user(){
     $to_check = get_sets('set_userroles');
-    $limit = get_sets('max_view');
-    $timestamp = get_sets('last_login');
-    $start = get_sets('check_period');
-    $end = date("Y-m-d");
+    
 
-    foreach($to_check as $check){
-        $check = trim($check);
-        $args = array(
-            'role'            =>    $check,
-            'posts_per_page'  =>    $limit[0],
-            'order'           =>    'DESC',
-            'orderby'         =>    'user_registered',
-            'date_query'             => array(
-                                        array(
-                                        'after'     => $start[0],
-                                        'before'    => $end,
-                                        'inclusive' => true,
+    if($to_check[0]){
+
+        $limit = get_sets('max_view');
+        $start = check_period();
+        $end = date("Y-m-d");
+
+        foreach($to_check as $check){
+            $check = trim($check);
+            $args = array(
+                'role'            =>    $check,
+                'posts_per_page'  =>    $limit[0],
+                'order'           =>    'DESC',
+                'orderby'         =>    'user_registered',
+                'date_query'             => array(
+                                            array(
+                                            'after'     => $start,
+                                            'before'    => $end,
+                                            'inclusive' => true,
+                                    ),
                                 ),
-                            ),
-        );
-        $users = get_users( $args );
-        echo '<h4>'.$check.'</h4>';
-        echo '<ul>';
-            foreach ( $users as $user ) {
-                echo '<li><a href="users.php?s='.$user->ID.'">' .esc_html($user->user_registered).' '.
-                esc_html( $user->display_name ) . '[' . esc_html( $user->user_email ) . ']'.esc_html( $user->user_url ).'</a></li>';
+            );
+            $users = get_users( $args );
+            if (count($users) > 0){
+            echo '<h4>'.$check.'</h4>';
+            echo '<ul class="ebsum_show_lis">';
+                foreach ( $users as $user ) {
+                    echo '<li><a href="users.php?s='.$user->ID.'">' .esc_html($user->user_registered).' '.
+                    esc_html( $user->display_name ) . '[' . esc_html( $user->user_email ) . ']'.esc_html( $user->user_url ).'</a></li>';
+                }
+            echo '</ul>';
+            }else{
+                echo '<h4>'.$check.'</h4>';
+                echo '<ul class="ebsum_show_lis" id="ebsum_'.$check.'">';
+                echo "Es sind keine aktuellen Änderungen vorhanden";
+                echo '</ul>';
             }
-        echo '</ul>';
-        
+            
+        }
+    }
+    else {
+        echo "Bitte wählen Sie eine Userrolle aus";
     }
     
 }
