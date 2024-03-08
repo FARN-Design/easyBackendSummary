@@ -37,18 +37,76 @@
     border-bottom: 2px solid rgba(0, 0, 0, .5);
 }
 
+.ebsum_show_wrapper li{
+    display: grid;
+  grid-template-columns: 125px 50px auto;
+  column-gap: 10px;
+  color: #646970;
+  padding: 4px 12px;
+}
+
+.showheadline{
+    display: flex;
+}
+
+.countlabel{
+    border: 1px solid lightcoral;
+    border-radius: 55px;
+    background-color: lightcoral;
+    color: white;
+    height: 1rem;
+    width: 1rem;
+    text-align: center;
+    font-weight: bold;
+    line-height: initial;
+    margin-left:0.5rem;
+}
+
+.countlabel.zero{
+    border: 1px solid lightgray;
+    background-color: lightgrey;
+    color: darkgray;
+    
+}
+
+.changelabelchange{
+    border: 1px solid lightgreen;
+    border-radius: 55px;
+    background-color: lightgreen;
+    color: white;
+    max-height: 1rem;
+    text-align: center;
+    font-weight: bold;
+    line-height: initial;
+}
+.changelabelnew{
+    border: 1px solid lightblue;
+    border-radius: 55px;
+    background-color: lightblue;
+    color: white;
+    max-height: 1rem;
+    text-align: center;
+    font-weight: bold;
+    line-height: initial;
+}
+
 #ebsum_setting_button{
     margin: 10px;
     margin-right: 0;
 }
 
-.ebsum_show_lis{
+.setting_main{
+    display: block;
+}
+
+.ebsum_show_list{
     border-bottom: 1px solid rgba(0, 0, 0, .5);
 }
 
-.ebsum_show_lis:last-of-type{
-    border-bottom: none;
+.ebsum_show_list:last-of-type{
+    border-bottom: none !important;
 }
+
 
 .setting_posttypes{
     padding: 0 2.5% 2.5% 2.5%;

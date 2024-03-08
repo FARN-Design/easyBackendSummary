@@ -58,6 +58,7 @@ $sql = "CREATE TABLE IF NOT EXISTS " . $ebsum . "(
     set_userroles   text,
     max_overwiev    int,
     max_view        int DEFAULT 3,
+    change_box      text,
     check_period    text,
     PRIMARY KEY (set_ID)
 )$charset;";
@@ -81,24 +82,18 @@ function easy_backend_summary_funktion() {
     ?> 
     <div class="ebsum_wrapper">
 
-    
-    <div class="ebsum_head_settings">
-    <?php
-        echo set_changelog();
-        echo set_period();
-     ?> 
-    </div>
     <div class="ebsum_show_wrapper">
-    <h3><strong>Posttypes</strong></h3>
+    
+    
     <?php echo show_posts();?> 
-    <h3><strong>Userollen</strong></h3>
+    
     <?php echo show_user();?> 
     
     </div>
     
     <div class="setting_wrapper_wrapper">
     
-    <span class="setting_posttypes_wrapper">+ weitere Kategorien hinzufügen</span>
+    <span class="setting_categories_wrapper">+ weitere Kategorien hinzufügen</span>
     <button type="button" id="ebsum_setting_button"><span class="dashicons dashicons-admin-generic"></span></button>
     
     
@@ -109,7 +104,11 @@ function easy_backend_summary_funktion() {
     
 
     <div class="ebsum_setting_wrapper">
-    <div class="setting_main">      <?php echo set_quantity(); ?>       </div>
+    <div class="setting_main">      
+        <?php 
+        echo main_settings();
+        ?>       
+    </div>
 
     
     
@@ -204,81 +203,78 @@ function set_last_login(){
     $check_user_ID = $wpdb->get_row( "SELECT `user_ID` FROM `uPQ3q_easyBackendSummary` WHERE `user_ID` = $user_id");
 
     if(isset($check_user_ID->user_ID)){
-    if($check_user_ID->user_ID != $user_id){
-    $wpdb->insert(
-        $ebsum,
-        [
-            'user_ID'           =>  $user_id,
-            'last_login'        =>  $now,
-        ]
-    );}
-    else {
-        $wpdb->update(
-            $ebsum,
-                ['last_login'   =>  $now],  
-                ['user_ID'      =>  $user_id]  
-            
-        );}
-    }else{
+        if($check_user_ID->user_ID != $user_id){
         $wpdb->insert(
             $ebsum,
             [
                 'user_ID'           =>  $user_id,
                 'last_login'        =>  $now,
             ]
-        );
+        );}
+        else {
+            $wpdb->update(
+                $ebsum,
+                    ['last_login'   =>  $now],  
+                    ['user_ID'      =>  $user_id]  
+                
+            );}
+        }else{
+            $wpdb->insert(
+                $ebsum,
+                [
+                    'user_ID'           =>  $user_id,
+                    'last_login'        =>  $now,
+                ]
+            );
+        }
     }
-    }
 
 
 
-//function to set the shown period
-function set_period(){
-    $period = get_sets('check_period');
-    $lastlogin = "lastlogin";
-    $today = "today";
-    $lastweek = "lastweek";
-    $lastmonth = "lastmonth";
-    $whole = "whole";
-
-    ?>
-        
-        <select class="period_time" name="period" id="periods">
-        <option class="period_time" value="<?php echo $lastlogin ?>" <?php if(trim($period[0])==$lastlogin){echo ' selected';} ?>>Seit dem letzten Login</option>
-        <option class="period_time" value="<?php echo $lastweek ?>" <?php if(trim($period[0])==$lastweek){echo ' selected';} ?>>Innerhalb der letzen 7 Tage</option>
-        <option class="period_time" value="<?php echo $lastmonth ?>" <?php if(trim($period[0])==$lastmonth){echo ' selected';} ?>>Innerhalb der letzen 30 Tage</option>
-        <option class="period_time" value="<?php echo $whole ?>" <?php if(trim($period[0])==$whole){echo ' selected';} ?>>Gesamter Zeitraum</option>
-        </select>
-        <br>
-    <?php
 
 
-}
 
-//function to set the shown quantity
-function set_quantity(){
-    $max_view = get_sets('max_view');
-    ?>
-        <label class="quantity" for="Quantity">Quantity to show:</label>
-        <input type="number" min="1" max="100" name="Quantity" stept="1" id="quantitys" default="3" value="<?php echo $max_view[0]; ?>">
-        <br>
-    <?php
-}
+    function main_settings(){
 
-function set_changelog(){
+        //function to set change view
+        $max_view = get_sets('max_view');
+        $period = get_sets('check_period');
+        $lastlogin = "lastlogin";
+        $today = "today";
+        $lastweek = "lastweek";
+        $lastmonth = "lastmonth";
+        $whole = "whole";
 
-    ?>
-        
-        <form action="">
-        <input type="checkbox" id="changes" name="chanes" value="changes">
-        <label for="changes">Änderungen</label>
-        <input type="checkbox" id="new" name="new" value="new">
-        <label for="new">Neu</label>
+        $change = get_sets('change_box');
+        $checked = "";
+        if($change[0] == 'changes' ){
+            $checked = "checked";
+        }
+    
+        ?>
+        <form ID="main_settings">
+
+            <label for="changes">Änderungen anzeigen</label>
+            <input type="checkbox" id="changes" name="changes" value="changes" <?php echo $checked; ?> >
+            <br>
+    
+            <label class="quantity" for="quantity">Anzahl:</label>
+            <input type="number" min="1" max="100" name="quantity" step="1" id="quantitys" default="3" value="<?php echo $max_view[0]; ?>">
+            <br>
+
+            <select class="period_time" name="period" id="periods">
+                <option class="period_time" value="<?php echo $lastlogin ?>" <?php if(trim($period[0])==$lastlogin){echo ' selected';} ?>>Seit dem letzten Login</option>
+                <option class="period_time" value="<?php echo $lastweek ?>" <?php if(trim($period[0])==$lastweek){echo ' selected';} ?>>Innerhalb der letzen 7 Tage</option>
+                <option class="period_time" value="<?php echo $lastmonth ?>" <?php if(trim($period[0])==$lastmonth){echo ' selected';} ?>>Innerhalb der letzen 30 Tage</option>
+                <option class="period_time" value="<?php echo $whole ?>" <?php if(trim($period[0])==$whole){echo ' selected';} ?>>Gesamter Zeitraum</option>
+            </select><br>
+    
+            <input type="submit" value="Submit">
         </form>
+        <?php
+    }
+    
 
-    <?php
-
-}
 
 //-----------------------------setting the Get Functions-----------------------------
 
@@ -330,10 +326,22 @@ function show_posts(){
     
 
     if($to_check[0]){
+        echo "<h3><strong>Posttypes</strong></h3>";
             
         $limit = get_sets('max_view');
         $start = check_period();
-        $end = date("Y-m-d");
+        
+
+        // check if view of change is activ or not. if it is then the ordby by will change to modifed date and the modified date will show in collum
+        $change = get_sets('change_box');
+        $orderby = "";
+        if($change[0] == 'changes' ){
+            $orderby = "post_modified";
+            $label = true;
+        }else{
+            $orderby = "post_date";
+            $label = false;
+        }
 
 
         foreach($to_check as $check){
@@ -342,38 +350,55 @@ function show_posts(){
                 'post_type' => $check,
                 'posts_per_page'         => $limit[0],
                 'order'                  => 'DESC',
-                'orderby'                => 'post_date',
+                'orderby'                => $orderby,
                 'date_query'             => array(
                                             array(
                                             'after'     => $start,
-                                            'before'    => $end,
                                             'inclusive' => true,
+                                            'column'    => $orderby,
                                     ),
                                 ),
             );
             $post_query = new WP_Query( $args );
 
             if ( $post_query->have_posts() ) {
-                echo '<h4>'.$check.'</h4>';
-                echo '<ul class="ebsum_show_lis" id="ebsum_'.$check.'">';
+                echo '<div class="showheadline"><h4>'.ucfirst($check).'</h4><span class="countlabel">'.$post_query->found_posts.'</span></div>';
+                echo '<ul class="ebsum_show_list">';
                 while ( $post_query->have_posts() ) {
                     $post_query->the_post();
-                    echo '<li><a href="'.get_permalink().'">' .get_the_date()."     " . esc_html( get_the_title() ) . 
+                    echo '<li>
                     
-                    '</a></li>';
+                    <span>';
+                    //check if label is set to show the post date or the modfied date of post
+                    if($label){
+                        echo get_the_modified_date();
+                        }else{
+                            echo get_the_date();
+                        }
+                    echo '</span>';
+
+                    //check if label is set to show the new or change label. is not then every post is set to new
+                    if($label){
+                        if(get_the_modified_date() == get_the_date()){
+                        echo '<span class="changelabelnew">neu</span>';
+
+                        }else{
+                            echo '<span class="changelabelchange">change</span>';
+                        }
+                    }else{
+                        echo '<span class="changelabelnew">neu</span>';
+                    }
+                    
+                    echo '<a href="'.get_permalink().'">'.esc_html(get_the_title()).'</a></li>';
                 }
                 echo '</ul>';
             } else{
-                echo '<h4>'.$check.'</h4>';
-                echo '<ul class="ebsum_show_lis" id="ebsum_'.$check.'">';
-                echo "Es sind keine aktuellen Änderungen vorhanden";
-                echo '</ul>';
+                echo '<div class="showheadline"><h4>'.ucfirst($check).'</h4><span class="countlabel zero">0</span></div>';
+                echo '<ul class="ebsum_show_list" id="ebsum_'.$check.'"></ul>';
+                
             }
             
         }
-    }
-    else {
-        echo "Bitte wählen Sie einen Posttype aus";
     }
     
 }
@@ -384,10 +409,10 @@ function show_user(){
     
 
     if($to_check[0]){
+        echo "<h3><strong>Userrolles</strong></h3>";
 
         $limit = get_sets('max_view');
         $start = check_period();
-        $end = date("Y-m-d");
 
         foreach($to_check as $check){
             $check = trim($check);
@@ -399,31 +424,30 @@ function show_user(){
                 'date_query'             => array(
                                             array(
                                             'after'     => $start,
-                                            'before'    => $end,
                                             'inclusive' => true,
                                     ),
                                 ),
             );
             $users = get_users( $args );
             if (count($users) > 0){
-            echo '<h4>'.$check.'</h4>';
-            echo '<ul class="ebsum_show_lis">';
+            echo '<div class="showheadline"><h4>'.$check.' </h4><span class="countlabel">'.count($users).'</span></div>';
+            echo '<ul class="ebsum_show_list_user">';
                 foreach ( $users as $user ) {
-                    echo '<li><a href="users.php?s='.$user->ID.'">' .esc_html($user->user_registered).' '.
-                    esc_html( $user->display_name ) . '[' . esc_html( $user->user_email ) . ']'.esc_html( $user->user_url ).'</a></li>';
+                    echo '<li>
+                    
+                    <span>' .date("d M Y", strtotime(esc_html($user->user_registered))).'</span>
+
+                    <span> </span>
+
+                    <a href="users.php?s='.$user->ID.'">'. esc_html( $user->display_name ) . '[' . esc_html( $user->user_email ) . ']'.esc_html( $user->user_url ).'</a></li>';
                 }
             echo '</ul>';
             }else{
-                echo '<h4>'.$check.'</h4>';
-                echo '<ul class="ebsum_show_lis" id="ebsum_'.$check.'">';
-                echo "Es sind keine aktuellen Änderungen vorhanden";
-                echo '</ul>';
+                echo '<div class="showheadline"><h4>'.ucfirst($check).'</h4><span class="countlabel zero">0</span></div>';
+                echo '<ul class="ebsum_show_list_user" id="ebsum_'.$check.'"></ul>';
             }
             
         }
-    }
-    else {
-        echo "Bitte wählen Sie eine Userrolle aus";
     }
     
 }

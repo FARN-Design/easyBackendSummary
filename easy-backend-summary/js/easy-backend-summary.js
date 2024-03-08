@@ -16,23 +16,9 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    $("#periods").on('change',function() {
 
-        var form = $(this);
-        
-        $.ajax({
-            type: "POST",
-            url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
-            data: form.serialize(),
-            success: function()
-            {
-                location.reload();
-            }
-        });
-    });
-
-    $("#quantitys").on('change',function() {
-
+    $("#main_settings").on('submit',function(e) {
+        e.preventDefault();
         var form = $(this);
         
         $.ajax({
@@ -51,13 +37,8 @@ jQuery(document).ready(function ($) {
 
     });
 
-    $('.setting_posttypes_wrapper').click(function () {
+    $('.setting_categories_wrapper').click(function () {
         $('.setting_posttypes').toggle();
-
-    });
-
-    $('.setting_userolles_wrapper').click(function () {
-        $('.setting_userroles').toggle();
 
     });
 });
