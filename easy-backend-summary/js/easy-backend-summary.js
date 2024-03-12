@@ -5,11 +5,21 @@ jQuery(document).ready(function ($) {
         e.preventDefault(); 
     
         var form = $(this);
+
+        //todo need data object
+        /*
+        let data = {
+            nonce: "",
+            action: "NAME of the ajax call",
+            formData: form.serialize(),
+        }
+        */
         
         $.ajax({
             type: "POST",
-            url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
-            data: form.serialize(), 
+            url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php", //TODO Error must be to ajax main url
+            data: form.serialize(),
+            //data: data,
             success: function()
             {
                 location.reload();
