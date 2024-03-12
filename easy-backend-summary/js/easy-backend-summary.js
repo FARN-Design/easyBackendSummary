@@ -1,14 +1,15 @@
 jQuery(document).ready(function ($) {
 
+   // Function to save datas from settings to database posttypes and userroles
     $(".ebsum-class").submit(function (e) {
-        e.preventDefault(); // avoid to execute the actual submit of the form.
+        e.preventDefault(); 
     
         var form = $(this);
         
         $.ajax({
             type: "POST",
             url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
-            data: form.serialize(), // serializes the form's elements.
+            data: form.serialize(), 
             success: function()
             {
                 location.reload();
@@ -16,7 +17,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
-
+ // Function to save datas from settings to database period, changes an the limits
     $("#main_settings").on('submit',function(e) {
         e.preventDefault();
         var form = $(this);
@@ -32,6 +33,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    // functio to show or hide the Settings
     $('#ebsum_setting_button').click(function () {
         $('.ebsum_setting_wrapper').toggle();
 
@@ -41,4 +43,26 @@ jQuery(document).ready(function ($) {
         $('.setting_posttypes').toggle();
 
     });
+
+
+    
+    // functtion to show more or less list objects
+    $('.showmoreposts').click(function(){
+        $(this).addClass('hidebutton');
+        $(this).closest('ul').find('.hiddenposts').addClass('showmore');
+        $(this).parent().find('.showlessposts').addClass('showbutton');
+        $(this).parent().find('.showlessposts').removeClass('hidebutton'); 
+        
+    });
+    $('.showlessposts').click(function(){
+        $(this).addClass('hidebutton');
+        $(this).parent().find('.showmoreposts').removeClass('hidebutton');    
+        $(this).parent().find('.showmoreposts').addClass('showbutton');        
+        $(this).closest('ul').find('.hiddenposts').removeClass('showmore');
+    });
+    
+   
+
+    
+
 });

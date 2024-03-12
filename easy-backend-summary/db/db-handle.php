@@ -8,30 +8,27 @@ require('../../../../wp-load.php');
 var_dump ($_POST);
 
 
-$posts = array();
-$user = array();
-$changes = "";
-$quantity = "";
-$period = "";
+$posts      = array();
+$user       = array();
+$changes    = "";
+$quantity   = "";
+$period     = "";
+$loadlimit  = "";
 
-// Durchlaufen Sie das $_POST-Array
+// looping the POST, check for value and push to the right var / array
 foreach ($_POST as $key => $value) {
-    // Überprüfen Sie, ob der Schlüssel mit 'set_posttypes_' beginnt
-    if (strpos($key, 'set_posttypes_') === 0) {
+    if  (strpos($key, 'set_posttypes_') === 0) {
         $posts[] = $value;
-    }
-    // Überprüfen Sie, ob der Schlüssel mit 'set_userroles_' beginnt
-    elseif (strpos($key, 'set_userroles_') === 0) {
+    }   elseif (strpos($key, 'set_userroles_') === 0) {
         $user[] = $value;
-    } 
-    elseif (strpos($key, 'changes') === 0) {
+    }   elseif (strpos($key, 'changes') === 0) {
         $changes = $value;
-    } 
-    elseif (strpos($key, 'quantity') === 0) {
+    }   elseif (strpos($key, 'quantity') === 0) {
         $quantity = $value;
-    } 
-    elseif (strpos($key, 'period') === 0) {
+    }   elseif (strpos($key, 'period') === 0) {
         $period = $value;
+    }   elseif (strpos($key, 'loadlimit') === 0) {
+        $loadlimit = $value;
     } 
 }
 
@@ -46,7 +43,7 @@ var_dump($period);
 function check_post ($array, $value){
     $string = implode("; ", $array);
     $string = strtolower($string);
-    $type = str_contains($string, $value);
+    $type   = str_contains($string, $value);
     return $type;
 }
 
@@ -60,6 +57,7 @@ if(!($_POST) or check_post($posts, 'posttype') or check_post($user, 'user')){
     set_settings($changes, 'change_box',"");
     set_settings($quantity, 'max_view',"");
     set_settings($period, 'check_period',"");
+    set_settings($loadlimit, 'load_limit', "");
 
 }
 
@@ -83,6 +81,8 @@ function set_settings($array, $key, $value){
         ['user_ID'  => $user_id] 
     );
 }
+
+
 
 
 

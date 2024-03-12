@@ -21,6 +21,10 @@
     justify-content: space-between;
 }
 
+.setting_categories_wrapper{
+    cursor: pointer;
+}
+
 .ebsum_button_wrapper{
     text-align: end;
 }
@@ -48,6 +52,8 @@
 .showheadline{
     display: flex;
 }
+
+
 
 .countlabel{
     border: 1px solid lightcoral;
@@ -93,6 +99,9 @@
 #ebsum_setting_button{
     margin: 10px;
     margin-right: 0;
+    background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .setting_main{
@@ -119,4 +128,50 @@
     justify-content: space-between;
 
     align-items: center;
+}
+
+.showmorepostbutton{
+    margin-bottom: -17px;
+    margin-top: -7px;
+}
+
+#hideposts{
+    display: none;
+}
+
+#showmoreposts{
+    border: none;
+    text-align: center;
+    background-color: unset;
+    cursor: pointer;
+    border: none;
+    margin-left: 50%;
+
+}
+
+#showlessposts{
+    border: none;
+    text-align: center;
+    background-color: unset;
+    cursor: pointer;
+    display: none;
+    margin-left: 50%;
+}
+
+.showmore{
+    display: grid !important;
+}
+
+.showbutton {
+    display: block !important;
+}
+
+.hidebutton {
+    display: none !important;
+}
+
+li.settingslist{
+    display: grid;
+    grid-template-columns: 180px auto;
+    background: none !important;
 }
