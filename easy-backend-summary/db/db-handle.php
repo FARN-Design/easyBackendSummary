@@ -5,60 +5,49 @@
 
 require('../../../../wp-load.php');
 
-var_dump ($_POST);
+
+$str = ($_POST['formData']);
 
 
-$posts      = array();
-$user       = array();
-$changes    = "";
-$quantity   = "";
-$period     = "";
-$loadlimit  = "";
 
-// looping the POST, check for value and push to the right var / array
-foreach ($_POST as $key => $value) {
-    if  (strpos($key, 'set_posttypes_') === 0) {
-        $posts[] = $value;
-    }   elseif (strpos($key, 'set_userroles_') === 0) {
-        $user[] = $value;
-    }   elseif (strpos($key, 'changes') === 0) {
-        $changes = $value;
-    }   elseif (strpos($key, 'quantity') === 0) {
-        $quantity = $value;
-    }   elseif (strpos($key, 'period') === 0) {
-        $period = $value;
-    }   elseif (strpos($key, 'loadlimit') === 0) {
-        $loadlimit = $value;
-    } 
+function parseString($str) {
+    $pairs = explode('&', $str);
+    $result = array();
+    foreach ($pairs as $pair) {
+        $keyValue = explode('=', $pair);
+        $key = $keyValue[0];
+        $value = $keyValue[1];
+        if (!isset($result[$key])) {
+            $result[$key] = array();
+        }
+        array_push($result[$key], $value);
+    }
+    return $result;
 }
 
-// Geben Sie die neuen Arrays aus
-var_dump($posts);
-var_dump($user);
-var_dump($changes);
-var_dump($quantity);
-var_dump($period);
 
-//function to check POST for value to setting
-function check_post ($array, $value){
-    $string = implode("; ", $array);
-    $string = strtolower($string);
-    $type   = str_contains($string, $value);
-    return $type;
-}
+$array = parseString($str);
 
-// check type to save in settings
-if(!($_POST) or check_post($posts, 'posttype') or check_post($user, 'user')){
-    
-    set_settings($posts, 'set_posttypes', 'set_posttypes');
-    set_settings($user, 'set_userroles', 'set_userroles');
+print_r ($array);
 
-}elseif ($changes or $quantity or $period){
-    set_settings($changes, 'change_box',"");
+if (isset($array['set_posttypes'][0]) || isset($array['set_userroles'][0]) ){
+$posts = ($array['set_posttypes']);
+$user = ($array['set_userroles']);
+
+var_dump ($posts);
+var_dump ($user);
+set_settings($posts, 'set_posttypes', 'set_posttypes');
+set_settings($user, 'set_userroles', 'set_userroles');
+} else {
+$changed = ($array['changes'][0]);
+$quantity = ($array['quantity'][0]);
+$loadlimit = ($array['loadlimit'][0]);
+$period = ($array['period'][0]);
+
+set_settings($changed, 'change_box',"");
     set_settings($quantity, 'max_view',"");
     set_settings($period, 'check_period',"");
     set_settings($loadlimit, 'load_limit', "");
-
 }
 
 

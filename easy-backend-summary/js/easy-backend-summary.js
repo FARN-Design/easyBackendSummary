@@ -1,45 +1,53 @@
 jQuery(document).ready(function ($) {
 
    // Function to save datas from settings to database posttypes and userroles
-    $(".ebsum-class").submit(function (e) {
-        e.preventDefault(); 
-    
-        var form = $(this);
+   $(".ebsum-class").submit(function (e) {
+    e.preventDefault(); 
 
-        //todo need data object
-        /*
-        let data = {
-            nonce: "",
-            action: "NAME of the ajax call",
-            formData: form.serialize(),
-        }
-        */
-        
+        var data = {
+            action: "create_post_type_setting",
+            formData: $(this).serialize(),
+        };
+
         $.ajax({
             type: "POST",
-            url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php", //TODO Error must be to ajax main url
-            data: form.serialize(),
-            //data: data,
-            success: function()
-            {
+            url: ebsum_ajax_data.ebsum_url,
+            nonce: ebsum_ajax_data.nonce,
+            data: data, 
+            success:function( data ) {
                 location.reload();
+            },
+            error: function(data){
+                console.log(error);
             }
+            
+            
         });
     });
+
 
  // Function to save datas from settings to database period, changes an the limits
     $("#main_settings").on('submit',function(e) {
         e.preventDefault();
-        var form = $(this);
         
+        var data = {
+            action: "main_settings",
+            formData: $(this).serialize(),
+        };
+
         $.ajax({
             type: "POST",
-            url: "../wp-content/plugins/easy-backend-summary/db/db-handle.php",
-            data: form.serialize(),
-            success: function()
-            {
+            url: ebsum_ajax_data.ebsum_url,
+            nonce: ebsum_ajax_data.nonce,
+            data: data, 
+            success:function( data ) {
                 location.reload();
+            },
+            error: function(data){
+                console.log(error);
             }
+            
+            
         });
     });
 

@@ -15,28 +15,40 @@
 
 //TODO Allgemeine Struktur A vor B oder B vor A
 
-//add css and js
+
+
+//-----------------------------enque js, css and set ajax-----------------------------
+
 function farn_enqueueScriptsAndStyles(): void
 {
     wp_enqueue_script('easy-backend-summary-script', plugin_dir_url(__FILE__) . 'js/easy-backend-summary.js', array('jquery'), '', true);
+    wp_localize_script( 'easy-backend-summary-script', 'ebsum_ajax_data',[
+        'ebsum_url' => plugin_dir_url(__FILE__) . 'db/db-handle.php',
+        'nonce' => wp_create_nonce('ebsum_nonce')
+    ]);
+
     wp_enqueue_style('easy-backend-summary-style', plugin_dir_url(__FILE__) . 'css/easy-backend-summary.css');
 }
 
 add_action('admin_enqueue_scripts', 'farn_enqueueScriptsAndStyles');
 
+
 add_action('wp_ajax_show_posts', 'show_posts');
 add_action('wp_ajax_nopriv_show_posts', 'show_posts');
 add_action('wp_ajax_show_user', 'show_user');
 add_action('wp_ajax_nopriv_show_user', 'show_user');
+add_action('wp_ajax_create_post_type_setting', 'create_post_type_setting');
+add_action('wp_ajax_nopriv_create_post_type_setting', 'create_post_type_setting');
+add_action('wp_ajax_main_settings', 'main_settings');
+add_action('wp_ajax_nopriv_main_settings', 'main_settings');
 
-
-//Add Widget to show content
+//set metabox datas
 function easy_backend_summary()
 {
     add_meta_box(
         'easy_backend_summary',
         'Easy Backend Summary',
-        'easy_backend_summary_funktion',
+        'meta_callback_function',
         'dashboard',
         'normal',
         'high'
@@ -78,7 +90,7 @@ register_activation_hook(__FILE__, 'create_database');
 
 //setting all functions to show
 //TODO Remove echos & English & callback in name
-function easy_backend_summary_funktion()
+function meta_callback_function(): void
 {
     set_last_login();
     ?>
@@ -120,10 +132,10 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
 {
 
     $user_id = get_current_user_id();
-    $posttype_setting = '<ul class="ebs-ul"><form class="ebsum-class" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
-    $posttype_setting .= '<strong>Posttypes</strong>';
-    $to_check_posts = get_sets($name);
-    $to_check_roles = get_sets($rolenames);
+    $posttype_setting   = '<ul class="ebs-ul"><form class="ebsum-class" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
+    $posttype_setting  .= '<strong>Posttypes</strong>';
+    $to_check_posts     = get_db_data($name);
+    $to_check_roles     = get_db_data($rolenames);
 
     foreach ($types as $type) {
         $type = trim($type);
@@ -137,7 +149,7 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
             }
         }
 
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $type . '" name="' . $name . ' ' . $type . '" value="' . $name . ' ' . $type . '"' . $checked . '>';
+        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $type . '" name="' . $name . '" value="' . $type . '"' . $checked . '>';
         $posttype_setting .= '<label for="postytpe' . $type . '">' . $type . '</label></li>';
 
         if (isset($_POST[$type])) {
@@ -157,7 +169,7 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
             }
         }
 
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $rolenames . ' ' . $role . '" value="' . $rolenames . ' ' . $role . '"' . $checked . '>';
+        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $rolenames . '" value="'. $role . '"' . $checked . '>';
         $posttype_setting .= '<label for="postytpe' . $role . '">' . $role . '</label></li>';
 
         if (isset($_POST[$role])) {
@@ -188,7 +200,7 @@ function set_last_login()
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
     //TODO Dynamische implementation
-    $check_user_ID = $wpdb->get_row("SELECT `user_ID` FROM `uPQ3q_easyBackendSummary` WHERE `user_ID` = $user_id");
+    $check_user_ID = $wpdb->get_row("SELECT `user_ID` FROM `$ebsum` WHERE `user_ID` = $user_id");
 
     //TODO überleg nochmal ob das wirklich so sein muss
     if (isset($check_user_ID->user_ID)) {
@@ -225,19 +237,19 @@ function set_last_login()
 function main_settings(): void
 {
 
-    //TODO Naming $max_view (snake_case)
+    
     //function to set change view
-    $max_view = get_sets('max_view');
-    $loadlimit = get_sets('load_limit');
-    $period = get_sets('check_period');
-    $lastlogin = "lastlogin";
-    $lastweek = "lastweek";
-    $lastmonth = "lastmonth";
-    $whole = "whole"; //TODO Rename whole_timeframe
-    $change = get_sets('change_box'); //TODO Rename changed
-    $checked = "";
+    $max_view   = get_db_data('max_view');
+    $load_limit  = get_db_data('load_limit');
+    $period     = get_db_data('check_period');
+    $last_login  = "lastlogin";
+    $last_week   = "lastweek";
+    $last_month  = "lastmonth";
+    $whole      = "whole"; //TODO Rename whole_timeframe
+    $changed     = get_db_data('change_box')[0]; //TODO Rename changed
+    $checked    = "";
 
-    if ($change[0] == 'changes') {
+    if ($changed == 'changes') {
         $checked = "checked";
     }
 
@@ -255,23 +267,23 @@ function main_settings(): void
 
             <li class="settingslist"><label class="loadlimit" for="loadlimit">max. Anzahl:</label>
                 <input type="number" min="1" max="100" name="loadlimit" step="1" id="loadlimits" default="10"
-                       value="<?php echo $loadlimit[0]; ?>">
+                       value="<?php echo $load_limit[0]; ?>">
                 <br></li>
 
             <li class="settingslist"><p>Anzeigeperiode</p>
                 <select class="period_time" name="period" id="periods">
                     <option class="period_time"
-                            value="<?php echo $lastlogin ?>" <?php if (trim($period[0]) == $lastlogin) {
+                            value="<?php echo $last_login ?>" <?php if (trim($period[0]) == $last_login) {
                         echo ' selected';
                     } ?>>Seit dem letzten Login
                     </option>
                     <option class="period_time"
-                            value="<?php echo $lastweek ?>" <?php if (trim($period[0]) == $lastweek) {
+                            value="<?php echo $last_week ?>" <?php if (trim($period[0]) == $last_week) {
                         echo ' selected';
                     } ?>>Innerhalb der letzen 7 Tage
                     </option>
                     <option class="period_time"
-                            value="<?php echo $lastmonth ?>" <?php if (trim($period[0]) == $lastmonth) {
+                            value="<?php echo $last_month ?>" <?php if (trim($period[0]) == $last_month) {
                         echo ' selected';
                     } ?>>Innerhalb der letzen 30 Tage
                     </option>
@@ -293,12 +305,13 @@ function main_settings(): void
 
 //get the settings from databes
 //TODO anderer Name
-function get_sets($key)
+function get_db_data($key)
 {
     $user_id = get_current_user_id();
     global $wpdb;
+    $ebsum = $wpdb->prefix . 'easyBackendSummary';
     //TODO dynamic implementation
-    $datas = $wpdb->get_row("SELECT `$key` FROM `uPQ3q_easyBackendSummary` WHERE `user_ID` = $user_id");
+    $datas = $wpdb->get_row("SELECT `$key` FROM `$ebsum` WHERE `user_ID` = $user_id");
     $datas = (array)$datas;
     $datas = implode(";", $datas);
     $datas = trim($datas);
@@ -306,22 +319,21 @@ function get_sets($key)
     return $datas;
 }
 
-//TODO comment
-//TODO fix [0]
+
 /**
- * This function dose this.
+ * This function get the setted period from the database an transform it to a date.
  *
  * @return string with the current period as Date representation.
  */
 function check_period(): string
 {
-    $timestamp = get_sets('last_login');
-    $period = get_sets('check_period');
+    $timestamp = get_db_data('last_login')[0];
+    $period = get_db_data('check_period')[0];
     $start = "";
 
-    switch ($period[0]) {
+    switch ($period) {
         case 'lastlogin':
-            $start = gmdate("Y-m-d", $timestamp[0]);
+            $start = gmdate("Y-m-d", $timestamp);
             break;
         case 'lastweek':
             $start = date("Y-m-d", strtotime('-7 day'));
@@ -333,7 +345,7 @@ function check_period(): string
             $start = "0000-00-00";
             break;
         default:
-            echo "0000-00-00";
+            $start = "0000-00-00";
     }
 
     return $start;
@@ -344,18 +356,18 @@ function check_period(): string
 // set function to show the post by posttype
 function show_posts()
 {
-    $to_check = get_sets('set_posttypes');
+    $to_check = get_db_data('set_posttypes');
 
     if ($to_check[0]) {
         echo "<h3><strong>Posttypes</strong></h3>";
 
-        $limit = get_sets('load_limit');
-        $max_view = get_sets('max_view')[0];
+        $limit = get_db_data('load_limit')[0];
+        $max_view = get_db_data('max_view')[0];
         $start = check_period();
 
         // check if view of change is activ or not. if it is then the ordby by will change to modifed date and the modified date will show in collum
-        $change = get_sets('change_box');
-        if ($change[0] == 'changes') {
+        $changed = get_db_data('change_box')[0];
+        if ($changed == 'changes') {
             $orderby = "post_modified";
             $label = true; //TODO Rename labe to state like name. "ShowLable"
         } else {
@@ -368,7 +380,7 @@ function show_posts()
             $check = trim($check);
             $args = array(
                 'post_type' => $check,
-                'posts_per_page' => $limit[0],
+                'posts_per_page' => $limit,
                 'order' => 'DESC',
                 'orderby' => $orderby,
                 'date_query' => array(
@@ -443,22 +455,22 @@ function show_user()
 {
 
 
-    $to_check = get_sets('set_userroles');
-    $max_view = get_sets('max_view');
+    $to_check = get_db_data('set_userroles');
+    $max_view = get_db_data('max_view');
     $max_view = $max_view[0];
 
 
     if ($to_check[0]) {
         echo "<h3><strong>Userrolles</strong></h3>";
 
-        $limit = get_sets('max_view');
+        $limit = get_db_data('max_view')[0];
         $start = check_period();
 
         foreach ($to_check as $check) {
             $check = trim($check);
             $args = array(
                 'role' => $check,
-                'posts_per_page' => $limit[0],
+                'posts_per_page' => $limit,
                 'order' => 'DESC',
                 'orderby' => 'user_registered',
                 'date_query' => array(
