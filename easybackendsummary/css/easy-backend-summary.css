@@ -112,7 +112,15 @@
     border-bottom: 1px solid rgba(0, 0, 0, .5);
 }
 
-.ebsum_show_list:last-of-type{
+.ebsum_show_list:last-child{
+    border-bottom: none !important;
+}
+
+.ebsum_show_list_user{
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+}
+
+.ebsum_show_list_user:last-child{
     border-bottom: none !important;
 }
 

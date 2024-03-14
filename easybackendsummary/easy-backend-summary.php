@@ -363,7 +363,7 @@ function show_posts()
     $to_check = get_db_data('set_posttypes');
 
     if ($to_check[0]) {
-        echo "<h3><strong>Posttypes</strong></h3>";
+        echo "<div><h3><strong>Posttypes</strong></h3>";
 
         $limit = get_db_data('load_limit')[0];
         $max_view = get_db_data('max_view')[0];
@@ -449,7 +449,9 @@ function show_posts()
                 echo '<ul class="ebsum_show_list" id="ebsum_' . $check . '"></ul>';
             }
 
+
         }
+        echo '</div>';
     }
 
 }
@@ -460,21 +462,18 @@ function show_user()
 
 
     $to_check = get_db_data('set_userroles');
-    $max_view = get_db_data('max_view');
-    $max_view = $max_view[0];
-
+    $max_view = get_db_data('max_view')[0];
+    $limit = get_db_data('load_limit')[0];
+    $start = check_period();
 
     if ($to_check[0]) {
-        echo "<h3><strong>Userrolles</strong></h3>";
-
-        $limit = get_db_data('max_view')[0];
-        $start = check_period();
+        echo "<div><h3><strong>Userrolles</strong></h3>";
 
         foreach ($to_check as $check) {
             $check = trim($check);
             $args = array(
                 'role' => $check,
-                'posts_per_page' => $limit,
+                'number' => $limit,
                 'order' => 'DESC',
                 'orderby' => 'user_registered',
                 'date_query' => array(
@@ -500,7 +499,7 @@ function show_user()
                                 <span> </span>
 
                                 <a href="users.php?s=' . $user->ID . '">' . esc_html($user->display_name) . ' [' . esc_html($user->user_email) . '] ' . esc_html($user->user_url) . '</a></li>';
-                        $count++;
+                        
                     } else {
 
                         echo '<li class="hiddenposts" id="hideposts">
@@ -510,8 +509,9 @@ function show_user()
                             <span> </span>
 
                             <a href="users.php?s=' . $user->ID . '">' . esc_html($user->display_name) . ' [' . esc_html($user->user_email) . '] ' . esc_html($user->user_url) . '</a></li>';
-
+                            
                     }
+                    $count++;
                 }
                 if (count($users) > $max_view) {
                     echo '<div class="showmorepostbutton">
@@ -520,14 +520,19 @@ function show_user()
                             </div>';
                 }
 
-                echo '</ul>';
+
+                echo '<br></ul>';
+
 
 
             } else {
                 echo '<div class="showheadline"><h4>' . ucfirst($check) . '</h4><span class="countlabel zero">0</span></div>';
                 echo '<ul class="ebsum_show_list_user" id="ebsum_' . $check . '"></ul>';
             }
+           
+            
         }
+        echo '</div>';
     }
 }
 
