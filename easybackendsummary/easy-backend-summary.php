@@ -188,8 +188,12 @@ function setup_posts_and_users()
 {
     $types = get_post_types();
     global $wp_roles;
-    $roles = $wp_roles->get_names();
-    echo create_post_type_setting($types, "set_posttypes", $roles, "set_userroles");
+    $roles = $wp_roles->roles;
+    $slug_array=array();
+    foreach ($roles as $role_slug => $role) {
+        $slug_array[]=$role_slug;
+    }
+    echo create_post_type_setting($types, "set_posttypes", $slug_array, "set_userroles");
 }
 
 //function to set the last login time (checks if user id allready set and then saves the last login time)
@@ -481,10 +485,11 @@ function show_user()
                 ),
             );
             $users = get_users($args);
+            
             $count = 0;
             if (count($users) > 0) {
 
-                echo '<div class="showheadline"><h4>' . $check . ' </h4><span class="countlabel">' . count($users) . '</span></div>';
+                echo '<div class="showheadline"><h4>' . ucfirst($check) . ' </h4><span class="countlabel">' . count($users) . '</span></div>';
                 echo '<ul class="ebsum_show_list_user">';
                 foreach ($users as $user) {
                     if ($count < $max_view) {
@@ -494,7 +499,7 @@ function show_user()
 
                                 <span> </span>
 
-                                <a href="users.php?s=' . $user->ID . '">' . esc_html($user->display_name) . '[' . esc_html($user->user_email) . ']' . esc_html($user->user_url) . '</a></li>';
+                                <a href="users.php?s=' . $user->ID . '">' . esc_html($user->display_name) . ' [' . esc_html($user->user_email) . '] ' . esc_html($user->user_url) . '</a></li>';
                         $count++;
                     } else {
 
@@ -504,7 +509,7 @@ function show_user()
 
                             <span> </span>
 
-                            <a href="users.php?s=' . $user->ID . '">' . esc_html($user->display_name) . '[' . esc_html($user->user_email) . ']' . esc_html($user->user_url) . '</a></li>';
+                            <a href="users.php?s=' . $user->ID . '">' . esc_html($user->display_name) . ' [' . esc_html($user->user_email) . '] ' . esc_html($user->user_url) . '</a></li>';
 
                     }
                 }

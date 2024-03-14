@@ -20,8 +20,6 @@ jQuery(document).ready(function ($) {
             error: function(data){
                 console.log(error);
             }
-            
-            
         });
     });
 
@@ -46,8 +44,6 @@ jQuery(document).ready(function ($) {
             error: function(data){
                 console.log(error);
             }
-            
-            
         });
     });
 
