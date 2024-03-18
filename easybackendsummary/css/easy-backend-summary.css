@@ -1,12 +1,14 @@
-
+/*----------- general styles ---------*/
 
 #easy_backend_summary .inside{
     padding: 0;
     margin: 0;
 }
 
+/*----------- list styles ---------*/
+
 #easy_backend_summary li:nth-child(odd) { 
-    background: #f0f6fc; }
+    background: #f6f7f7; }
 
 .ebs-ul{
     column-count: 2;
@@ -54,6 +56,7 @@
 }
 
 
+/*----------- countlabel styles ---------*/
 
 .countlabel{
     border: 1px solid lightcoral;
@@ -61,12 +64,14 @@
     background-color: lightcoral;
     color: white;
     height: 1rem;
-    width: 1rem;
     text-align: center;
     font-weight: bold;
     line-height: initial;
     margin-left:0.5rem;
+    width: fit-content;
+    min-width: 1rem;
 }
+
 
 .countlabel.zero{
     border: 1px solid lightgray;
@@ -74,6 +79,8 @@
     color: darkgray;
     
 }
+
+/*----------- changelabel styles ---------*/
 
 .changelabelchange{
     border: 1px solid lightgreen;
@@ -96,6 +103,9 @@
     line-height: initial;
 }
 
+
+/*----------- button styles ---------*/
+
 #ebsum_setting_button{
     margin: 10px;
     margin-right: 0;
@@ -104,8 +114,15 @@
   cursor: pointer;
 }
 
+/*----------- setting styles ---------*/
+
 .setting_main{
     display: block;
+}
+
+.load_warning{
+    color: red;
+    display: none;
 }
 
 .ebsum_show_list{

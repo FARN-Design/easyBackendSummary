@@ -27,7 +27,11 @@ jQuery(document).ready(function ($) {
  // Function to save datas from settings to database period, changes an the limits
     $("#main_settings").on('submit',function(e) {
         e.preventDefault();
-        
+        let quantity = $('#quantitys').val();
+        let load_limit = $('#loadlimits').val();
+        if(load_limit < quantity){
+            $(".load_warning").css('display', 'block');
+        }else{
         var data = {
             action: "main_settings",
             formData: $(this).serialize(),
@@ -45,6 +49,7 @@ jQuery(document).ready(function ($) {
                 console.log(error);
             }
         });
+    }
     });
 
     // functio to show or hide the Settings

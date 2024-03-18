@@ -13,11 +13,12 @@
  Author URI: https://farn.de
  */
 
-//TODO Allgemeine Struktur A vor B oder B vor A
 
+ 
 
+//-----------------------------initializing-----------------------------
 
-//-----------------------------enque js, css and set ajax-----------------------------
+//  -enque js, css and set ajax---
 
 function farn_enqueueScriptsAndStyles(): void
 {
@@ -57,8 +58,12 @@ function easy_backend_summary()
 
 add_action('wp_dashboard_setup', 'easy_backend_summary');
 
-//Creat Database once by activating the Plugin
-function create_database()
+/**
+ * Create Table on instal the plugin
+ * 
+ * @return string with the sql to create the custom table.
+ */
+function create_database(): void
 {
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
@@ -82,52 +87,32 @@ function create_database()
     dbDelta($sql);
 }
 
-register_activation_hook(__FILE__, 'create_database');
-//TODO add deactivation
-/*register_deactivation_hook(__FILE__, function () {
-    //here
-});*/
-
-//setting all functions to show
-//TODO Remove echos & English & callback in name
-function meta_callback_function(): void
+/**
+ * Drop Table on uninstal the plugin
+ * 
+ * @return string with the sql to drop custom table.
+ */
+function drop_table_in_database(): void
 {
-    set_last_login();
-    ?>
-    <div class="ebsum_wrapper">
-
-        <div class="ebsum_show_wrapper">
-
-            <?php echo show_posts(); ?>
-
-            <?php echo show_user(); ?>
-
-        </div>
-
-        <div class="setting_wrapper_wrapper">
-
-            <span class="setting_categories_wrapper">+ weitere Kategorien hinzufügen</span>
-            <button type="button" id="ebsum_setting_button"><span class="dashicons dashicons-admin-generic"></span>
-            </button>
-
-        </div>
-        <div class="setting_posttypes"> <?php echo setup_posts_and_users(); ?>     </div>
-
-        <div class="ebsum_setting_wrapper">
-            <div class="setting_main">
-                <?php
-                echo main_settings();
-                ?>
-            </div>
-        </div>
-    </div>
-    <?php
+    global $wpdb;
+    $ebsum = $wpdb->prefix . 'easyBackendSummary';
+    $sql = "DROP TABLE IF EXISTS $ebsum";
+    $wpdb->query($sql);
 }
 
+register_activation_hook(__FILE__, 'create_database');
+register_deactivation_hook(__FILE__, 'drop_table_in_database');
 
-//-----------------------------setting the Post Functions-----------------------------
 
-//create function for looping the trough the array and make for each value an checkbox in an table
+
+//-----------------------------settings---------------------------------
+
+
+/**
+ * Create function for looping the trough the array and make for each value an checkbox in an table and checked if selected before
+ *
+ * @return array with the checkboxes for userroles and posttypes.
+ */
 function create_post_type_setting($types, $name, $roles, $rolenames)
 {
 
@@ -183,8 +168,12 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
     return $posttype_setting;
 }
 
-// setup for the posttypes
-function setup_posts_and_users()
+/**
+ * This function get the selected posttypes and userroles from custom database table and show in wp backend.
+ *
+ * @return array with the selected userrolles and posttypes.
+ */
+function setup_posts_and_users(): void
 {
     $types = get_post_types();
     global $wp_roles;
@@ -196,17 +185,20 @@ function setup_posts_and_users()
     echo create_post_type_setting($types, "set_posttypes", $slug_array, "set_userroles");
 }
 
-//function to set the last login time (checks if user id allready set and then saves the last login time)
-function set_last_login()
+/**
+ * This function set the user id and the now time in unix timestamp to the custom database table.
+ *
+ * @return array or string with unix timestamp and user id.
+ */
+function set_last_login(): void
 {
     $user_id = get_current_user_id();
     $now = get_user_meta(get_current_user_id(), "wfls-last-login", true);
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
-    //TODO Dynamische implementation
     $check_user_ID = $wpdb->get_row("SELECT `user_ID` FROM `$ebsum` WHERE `user_ID` = $user_id");
 
-    //TODO überleg nochmal ob das wirklich so sein muss
+   
     if (isset($check_user_ID->user_ID)) {
         if ($check_user_ID->user_ID != $user_id) {
             $wpdb->insert(
@@ -236,8 +228,11 @@ function set_last_login()
 }
 
 
-//Function for all settings (changes, periods, limits)
-//TODO move [0] to the declaration
+/**
+ * This function get the selected settings from the wp backend and wiill get by the js.
+ *
+ * @return array with the selected settings from wp backend.
+ */
 function main_settings(): void
 {
 
@@ -274,6 +269,8 @@ function main_settings(): void
                        value="<?php echo $load_limit[0]; ?>">
                 <br></li>
 
+            <p class="load_warning">Bitte setzte einen Wert für Übersicht der kleiner oder gleich dem Wert der max. Anzahl ist!</p>
+
             <li class="settingslist"><p>Anzeigeperiode</p>
                 <select class="period_time" name="period" id="periods">
                     <option class="period_time"
@@ -304,11 +301,14 @@ function main_settings(): void
 }
 
 
-//-----------------------------get data from database functions-----------------------------
 
+//-----------------------------get data from db and return---------------------------------
 
-//get the settings from databes
-//TODO anderer Name
+/**
+ * This function get all data from the custom database table.
+ *
+ * @return array with all settings, selected userroles and posttypes form the custom table.
+ */
 function get_db_data($key)
 {
     $user_id = get_current_user_id();
@@ -356,9 +356,14 @@ function check_period(): string
 
 }
 
-//TODO [0]
-// set function to show the post by posttype
-function show_posts()
+
+
+/**
+ * This function get the selected posttype data from database.
+ *
+ * @return string in list with the selected posttypes.
+ */
+function show_posts(): void
 {
     $to_check = get_db_data('set_posttypes');
 
@@ -380,10 +385,10 @@ function show_posts()
         }
 
         //TODO Rename check to checked_post_type
-        foreach ($to_check as $check) {
-            $check = trim($check);
+        foreach ($to_check as $checked) {
+            $checked = trim($checked);
             $args = array(
-                'post_type' => $check,
+                'post_type' => $checked,
                 'posts_per_page' => $limit,
                 'order' => 'DESC',
                 'orderby' => $orderby,
@@ -399,7 +404,7 @@ function show_posts()
             //TODO $foundPosts = $post_query->found_posts;
 
             if ($post_query->have_posts()) {
-                echo '<div class="showheadline"><h4>' . ucfirst($check) . '</h4><span class="countlabel">' . $post_query->found_posts . '</span></div>';
+                echo '<div class="showheadline"><h4>' . ucfirst($checked) . '</h4><span class="countlabel">' . $post_query->found_posts . '</span></div>';
                 echo '<ul class="ebsum_show_list">';
                 $count = 0;
                 while ($post_query->have_posts()) {
@@ -445,8 +450,8 @@ function show_posts()
                 echo '<br></ul>';
 
             } else {
-                echo '<div class="showheadline"><h4>' . ucfirst($check) . '</h4><span class="countlabel zero">0</span></div>';
-                echo '<ul class="ebsum_show_list" id="ebsum_' . $check . '"></ul>';
+                echo '<div class="showheadline"><h4>' . ucfirst($checked) . '</h4><span class="countlabel zero">0</span></div>';
+                echo '<ul class="ebsum_show_list" id="ebsum_' . $checked . '"></ul>';
             }
 
 
@@ -456,8 +461,12 @@ function show_posts()
 
 }
 
-// set function to show the user by roles
-function show_user()
+/**
+ * This function get the selected userroles data from database.
+ *
+ * @return list with the selected userrolles.
+ */
+function show_user(): void
 {
 
 
@@ -469,10 +478,10 @@ function show_user()
     if ($to_check[0]) {
         echo "<div><h3><strong>Userrolles</strong></h3>";
 
-        foreach ($to_check as $check) {
-            $check = trim($check);
+        foreach ($to_check as $checked) {
+            $checked = trim($checked);
             $args = array(
-                'role' => $check,
+                'role' => $checked,
                 'number' => $limit,
                 'order' => 'DESC',
                 'orderby' => 'user_registered',
@@ -488,7 +497,7 @@ function show_user()
             $count = 0;
             if (count($users) > 0) {
 
-                echo '<div class="showheadline"><h4>' . ucfirst($check) . ' </h4><span class="countlabel">' . count($users) . '</span></div>';
+                echo '<div class="showheadline"><h4>' . ucfirst($checked) . ' </h4><span class="countlabel">' . count($users) . '</span></div>';
                 echo '<ul class="ebsum_show_list_user">';
                 foreach ($users as $user) {
                     if ($count < $max_view) {
@@ -526,8 +535,8 @@ function show_user()
 
 
             } else {
-                echo '<div class="showheadline"><h4>' . ucfirst($check) . '</h4><span class="countlabel zero">0</span></div>';
-                echo '<ul class="ebsum_show_list_user" id="ebsum_' . $check . '"></ul>';
+                echo '<div class="showheadline"><h4>' . ucfirst($checked) . '</h4><span class="countlabel zero">0</span></div>';
+                echo '<ul class="ebsum_show_list_user" id="ebsum_' . $checked . '"></ul>';
             }
            
             
@@ -535,5 +544,48 @@ function show_user()
         echo '</div>';
     }
 }
+
+
+
+//-----------------------------display the functions with meta box in wp backend---------------------------------
+
+
+function meta_callback_function(): void
+{
+    set_last_login();
+    ?>
+    <div class="ebsum_wrapper">
+
+        <div class="ebsum_show_wrapper">
+
+            <?php echo show_posts(); ?>
+
+            <?php echo show_user(); ?>
+
+        </div>
+
+        <div class="setting_wrapper_wrapper">
+
+            <span class="setting_categories_wrapper">+ weitere Kategorien hinzufügen</span>
+            <button type="button" id="ebsum_setting_button"><span class="dashicons dashicons-admin-generic"></span>
+            </button>
+
+        </div>
+        <div class="setting_posttypes"> <?php echo setup_posts_and_users(); ?>     </div>
+
+        <div class="ebsum_setting_wrapper">
+            <div class="setting_main">
+                <?php
+                echo main_settings();
+                ?>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+
+
+
 
 ?>
