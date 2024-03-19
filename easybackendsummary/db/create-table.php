@@ -3,7 +3,7 @@
 /**
  * Create Table on install the plugin
  * 
- * @return string with the sql code to create the custom table.
+ * @return string with the sql code to create the custom table. //TODO you dont return anything here
  */
 function create_database(): void
 {
@@ -24,6 +24,7 @@ function create_database(): void
         PRIMARY KEY (set_ID)
     )   $charset;";
 
+    //TODO why do you need to require this here? Something is wrong!
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
     dbDelta($sql);

@@ -1,6 +1,6 @@
 <?php
 
-
+//TODO description and return type
 function db_handle(){
     if(!isset($_POST['is_submitted'])){
         return;
@@ -8,7 +8,7 @@ function db_handle(){
     set_data_to_db($_POST);
 }
 
-
+//TODO description and return type
 function set_data_to_db($post_array){
 
 
@@ -22,12 +22,13 @@ function set_data_to_db($post_array){
         if(!isset($post_array['changes'])){
             set_settings(' ', 'change_box',"");
         }else{
-        set_settings($post_array['changes'], 'change_box',"");
+            set_settings($post_array['changes'], 'change_box',"");
         }
     }
 }
 
 // setup function save Post to db $post_array = $_POST, $key = DB Key and $value = word to replace with nothing
+//TODO Documentation and return type
 function set_settings($post_array, $key, $value){
     
     if(is_array($post_array)){

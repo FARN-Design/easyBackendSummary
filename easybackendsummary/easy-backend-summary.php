@@ -24,6 +24,8 @@
 function farn_enqueueScriptsAndStyles(): void
 {
     wp_enqueue_script('easy-backend-summary-script', plugin_dir_url(__FILE__) . 'js/easy-backend-summary.js', array('jquery'), '', true);
+
+    //TODO Can be removed because you dont use ajax
     wp_localize_script( 'easy-backend-summary-script', 'ebsum_ajax_data',[
         'ebsum_url' => plugin_dir_url(__FILE__) . 'db/db-handle.php',
         'nonce' => wp_create_nonce('ebsum_nonce')
@@ -35,7 +37,7 @@ function farn_enqueueScriptsAndStyles(): void
 add_action('admin_enqueue_scripts', 'farn_enqueueScriptsAndStyles');
 
 //set metabox data
-function easy_backend_summary()
+function easy_backend_summary(): void
 {
     add_meta_box(
         'easy_backend_summary',
@@ -46,6 +48,7 @@ function easy_backend_summary()
         'high'
     );
 }
+
 add_action('wp_dashboard_setup', 'db_handle');
 add_action('wp_dashboard_setup', 'easy_backend_summary');
 register_activation_hook(__FILE__, 'create_database');
@@ -71,6 +74,7 @@ function create_post_type_setting($types, string $name, $roles, string $role_nam
     $to_check_posts     = get_db_data($name);
     $to_check_roles     = get_db_data($role_names);
 
+    //TODO can be combined with the duplicate starting at 98. To do that you can combine the arrays types and roles
     foreach ($types as $type) {
         $type = trim($type);
 
@@ -120,7 +124,7 @@ function create_post_type_setting($types, string $name, $roles, string $role_nam
 /**
  * This function get the selected posttypes and userroles from custom database table and show in wp backend.
  *
- * @return array with the selected userrolles and posttypes.
+ * @return array with the selected userrolles and posttypes. //TODO you define here that you return an array but in this function nothing is returned, just printed with echo.
  */
 function setup_posts_and_users(): void
 {
@@ -137,7 +141,7 @@ function setup_posts_and_users(): void
 /**
  * This function set the user id and the now time in unix timestamp to the custom database table.
  *
- * @return array or string with unix timestamp and user id.
+ * @return array or string with unix timestamp and user id. //TODO you define here that you return an array but in this function nothing is returned
  */
 function set_last_login(): void
 {
@@ -180,7 +184,7 @@ function set_last_login(): void
 /**
  * This function get the selected settings from the wp backend and wiill get by the js.
  *
- * @return array with the selected settings from wp backend.
+ * @return array with the selected settings from wp backend. //TODO you define here that you return an array but in this function nothing is returned, just printed.
  */
 function main_settings(): void
 {
@@ -254,17 +258,19 @@ function main_settings(): void
 
 //-----------------------------get data from db and return---------------------------------
 
-/**
+/**TODO this description is wrong because it only returns all values stored for a given key
  * This function get all data from the custom database table.
+ *
+ * @param string $key TODO Write description
  *
  * @return array with all settings, selected userroles and posttypes form the custom table.
  */
-function get_db_data($key)
+function get_db_data($key):array
 {
     $user_id = get_current_user_id();
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
-    //TODO dynamic implementation
+    //TODO dynamic implementation and rename datas
     $datas = $wpdb->get_row("SELECT `$key` FROM `$ebsum` WHERE `user_ID` = $user_id");
     $datas = (array)$datas;
     $datas = implode(";", $datas);
@@ -275,9 +281,11 @@ function get_db_data($key)
 
 
 /**
- * This function get the setted period from the database an transform it to a date.
+ * This function get the period from the database and transforms it to a date.
  *
  * @return string with the current period as Date representation.
+ * TODO look into PHP DateTime objects. They make it easy to handle dates.
+ * TODO this code must be able to support different timezones.
  */
 function check_period(): string
 {
@@ -311,7 +319,7 @@ function check_period(): string
 /**
  * This function get the selected posttype data from database.
  *
- * @return string in list with the selected posttypes.
+ * @return string in list with the selected posttypes. //TODO you say that you return a string but you return nothing and just echo stuff.
  */
 function show_posts(): void
 {
@@ -414,7 +422,7 @@ function show_posts(): void
 /**
  * This function get the selected userroles data from database.
  *
- * @return list with the selected userrolles.
+ * @return list with the selected userrolles. TODO list is not a type maybe you mean an array? but your functions returns void anyways
  */
 function show_user(): void
 {
@@ -499,7 +507,7 @@ function show_user(): void
 
 //-----------------------------display the functions with meta box in wp backend---------------------------------
 
-
+//TODO Description
 function meta_callback_function(): void
 {
     set_last_login();
@@ -533,9 +541,4 @@ function meta_callback_function(): void
     </div>
     <?php
 }
-
-
-
-
-
 ?>

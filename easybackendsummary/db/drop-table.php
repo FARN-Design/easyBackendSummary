@@ -2,9 +2,10 @@
 
 
 /**
- * Drop Table on uninstal the plugin
+ * Drop Table on uninstall the plugin
+ * TODO Why is this one function in a separate file?
  * 
- * @return string with the sql to drop custom table.
+ * @return string with the sql to drop custom table. TODO you dont return anything here
  */
 function drop_table_in_database(): void
 {
