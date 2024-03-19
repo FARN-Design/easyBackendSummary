@@ -13,8 +13,10 @@
  Author URI: https://farn.de
  */
 
+require "newFile.php";
 
- 
+
+newFunction();
 
 //-----------------------------initializing-----------------------------
 
@@ -38,12 +40,27 @@ add_action('wp_ajax_show_posts', 'show_posts');
 add_action('wp_ajax_nopriv_show_posts', 'show_posts');
 add_action('wp_ajax_show_user', 'show_user');
 add_action('wp_ajax_nopriv_show_user', 'show_user');
-add_action('wp_ajax_create_post_type_setting', 'create_post_type_setting');
-add_action('wp_ajax_nopriv_create_post_type_setting', 'create_post_type_setting');
+add_action('wp_ajax_create_post_type_setting', 'handle_wp_ajax_create_post_type_setting');
+add_action('wp_ajax_nopriv_create_post_type_setting', 'handle_wp_ajax_create_post_type_setting');
 add_action('wp_ajax_main_settings', 'main_settings');
 add_action('wp_ajax_nopriv_main_settings', 'main_settings');
 
-//set metabox datas
+function handle_wp_ajax_create_post_type_setting(){
+    $str = $_POST["formdata"];
+
+}
+
+add_action("wp_dashboard_setup", "xy");
+
+function xy(){
+    if (!isset($_POST["ebsum_mainForm"])){
+        return;
+    }
+
+    //TODO dbhandle
+}
+
+//set metabox data
 function easy_backend_summary()
 {
     add_meta_box(
@@ -59,7 +76,7 @@ function easy_backend_summary()
 add_action('wp_dashboard_setup', 'easy_backend_summary');
 
 /**
- * Create Table on instal the plugin
+ * Create Table on install the plugin
  * 
  * @return string with the sql to create the custom table.
  */
@@ -111,16 +128,16 @@ register_deactivation_hook(__FILE__, 'drop_table_in_database');
 /**
  * Create function for looping the trough the array and make for each value an checkbox in an table and checked if selected before
  *
- * @return array with the checkboxes for userroles and posttypes.
+ * @return string with the checkboxes for user_roles and post_types.
  */
-function create_post_type_setting($types, $name, $roles, $rolenames)
+function create_post_type_setting($types, string $name, $roles, string $role_names): string
 {
 
     $user_id = get_current_user_id();
     $posttype_setting   = '<ul class="ebs-ul"><form class="ebsum-class" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
-    $posttype_setting  .= '<strong>Posttypes</strong>';
+    $posttype_setting  .= '<strong>Post Types</strong>';
     $to_check_posts     = get_db_data($name);
-    $to_check_roles     = get_db_data($rolenames);
+    $to_check_roles     = get_db_data($role_names);
 
     foreach ($types as $type) {
         $type = trim($type);
@@ -141,7 +158,7 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
             echo "'" . $type . "is checked'<br>";
         };
     }
-    $posttype_setting .= "<br> <strong>Userrolles</strong>";
+    $posttype_setting .= "<br> <strong>User roles</strong>";
     foreach ($roles as $role) {
         $role = trim($role);
 
@@ -154,7 +171,7 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
             }
         }
 
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $rolenames . '" value="'. $role . '"' . $checked . '>';
+        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $role_names . '" value="'. $role . '"' . $checked . '>';
         $posttype_setting .= '<label for="postytpe' . $role . '">' . $role . '</label></li>';
 
         if (isset($_POST[$role])) {

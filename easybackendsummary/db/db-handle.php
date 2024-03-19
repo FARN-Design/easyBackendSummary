@@ -5,10 +5,7 @@
 
 require('../../../../wp-load.php');
 
-
 $str = ($_POST['formData']);
-
-
 
 function parseString($str) {
     $pairs = explode('&', $str);
@@ -24,7 +21,6 @@ function parseString($str) {
     }
     return $result;
 }
-
 
 $array = parseString($str);
 
@@ -70,10 +66,5 @@ function set_settings($array, $key, $value){
         ['user_ID'  => $user_id] 
     );
 }
-
-
-
-
-
 
 ?>

@@ -1,7 +1,8 @@
 jQuery(document).ready(function ($) {
 
    // Function to save datas from settings to database posttypes and userroles
-   $(".ebsum-class").submit(function (e) {
+
+$(".ebsum-class").submit(function (e) {
     e.preventDefault(); 
 
         var data = {
@@ -15,7 +16,7 @@ jQuery(document).ready(function ($) {
             nonce: ebsum_ajax_data.nonce,
             data: data, 
             success:function( data ) {
-                location.reload();
+                $(".wrapper").append(data)
             },
             error: function(data){
                 console.log(error);
