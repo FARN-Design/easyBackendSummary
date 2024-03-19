@@ -13,9 +13,10 @@
  Author URI: https://farn.de
  */
 
-
+ require "db/db-handle.php";
+ require "db/create-table.php";
+ require "db/drop-table.php";
  
-
 //-----------------------------initializing-----------------------------
 
 //  -enque js, css and set ajax---
@@ -33,17 +34,7 @@ function farn_enqueueScriptsAndStyles(): void
 
 add_action('admin_enqueue_scripts', 'farn_enqueueScriptsAndStyles');
 
-
-add_action('wp_ajax_show_posts', 'show_posts');
-add_action('wp_ajax_nopriv_show_posts', 'show_posts');
-add_action('wp_ajax_show_user', 'show_user');
-add_action('wp_ajax_nopriv_show_user', 'show_user');
-add_action('wp_ajax_create_post_type_setting', 'create_post_type_setting');
-add_action('wp_ajax_nopriv_create_post_type_setting', 'create_post_type_setting');
-add_action('wp_ajax_main_settings', 'main_settings');
-add_action('wp_ajax_nopriv_main_settings', 'main_settings');
-
-//set metabox datas
+//set metabox data
 function easy_backend_summary()
 {
     add_meta_box(
@@ -55,51 +46,8 @@ function easy_backend_summary()
         'high'
     );
 }
-
+add_action('wp_dashboard_setup', 'db_handle');
 add_action('wp_dashboard_setup', 'easy_backend_summary');
-
-/**
- * Create Table on instal the plugin
- * 
- * @return string with the sql to create the custom table.
- */
-function create_database(): void
-{
-    global $wpdb;
-    $ebsum = $wpdb->prefix . 'easyBackendSummary';
-    $charset = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE IF NOT EXISTS " . $ebsum . "(
-        set_ID          int     NOT NULL AUTO_INCREMENT,
-        user_ID         int     UNIQUE,
-        last_login      BIGINT,
-        set_posttypes   text,
-        set_userroles   text,
-        load_limit      int,
-        max_view        int DEFAULT 3,
-        change_box      text,
-        check_period    text,
-        PRIMARY KEY (set_ID)
-    )   $charset;";
-
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-    dbDelta($sql);
-}
-
-/**
- * Drop Table on uninstal the plugin
- * 
- * @return string with the sql to drop custom table.
- */
-function drop_table_in_database(): void
-{
-    global $wpdb;
-    $ebsum = $wpdb->prefix . 'easyBackendSummary';
-    $sql = "DROP TABLE IF EXISTS $ebsum";
-    $wpdb->query($sql);
-}
-
 register_activation_hook(__FILE__, 'create_database');
 register_deactivation_hook(__FILE__, 'drop_table_in_database');
 
@@ -111,16 +59,17 @@ register_deactivation_hook(__FILE__, 'drop_table_in_database');
 /**
  * Create function for looping the trough the array and make for each value an checkbox in an table and checked if selected before
  *
- * @return array with the checkboxes for userroles and posttypes.
+ * @return string with the checkboxes for user_roles and post_types.
  */
-function create_post_type_setting($types, $name, $roles, $rolenames)
+function create_post_type_setting($types, string $name, $roles, string $role_names): string
 {
 
     $user_id = get_current_user_id();
     $posttype_setting   = '<ul class="ebs-ul"><form class="ebsum-class" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
-    $posttype_setting  .= '<strong>Posttypes</strong>';
+    $posttype_setting  .= '<strong>Post Types</strong>';
+    $posttype_setting  .= '<input type="hidden" name="is_submitted" value="is_submitted"></input>';
     $to_check_posts     = get_db_data($name);
-    $to_check_roles     = get_db_data($rolenames);
+    $to_check_roles     = get_db_data($role_names);
 
     foreach ($types as $type) {
         $type = trim($type);
@@ -134,14 +83,14 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
             }
         }
 
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $type . '" name="' . $name . '" value="' . $type . '"' . $checked . '>';
+        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $type . '" name="' . $name . '[]" value="' . $type . '"' . $checked . '>';
         $posttype_setting .= '<label for="postytpe' . $type . '">' . $type . '</label></li>';
 
         if (isset($_POST[$type])) {
             echo "'" . $type . "is checked'<br>";
         };
     }
-    $posttype_setting .= "<br> <strong>Userrolles</strong>";
+    $posttype_setting .= "<br> <strong>User roles</strong>";
     foreach ($roles as $role) {
         $role = trim($role);
 
@@ -154,7 +103,7 @@ function create_post_type_setting($types, $name, $roles, $rolenames)
             }
         }
 
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $rolenames . '" value="'. $role . '"' . $checked . '>';
+        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $role_names . '[]" value="'. $role . '"' . $checked . '>';
         $posttype_setting .= '<label for="postytpe' . $role . '">' . $role . '</label></li>';
 
         if (isset($_POST[$role])) {
@@ -253,7 +202,7 @@ function main_settings(): void
     }
 
     ?>
-    <form ID="main_settings">
+    <form ID="main_settings" method="POST">
         <ul class="settingslist">
             <li class="settingslist"><label for="changes">Änderungen anzeigen</label>
                 <input type="checkbox" id="changes" name="changes" value="changes" <?php echo $checked; ?> >
@@ -294,6 +243,7 @@ function main_settings(): void
                     </option>
                 </select><br></li>
 
+            <input type="hidden" name="is_submitted" value="is_submitted"></input>
             <input type="submit" value="Speichern" class="button button-primary">
             </ul>
     </form>

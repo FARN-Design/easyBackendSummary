@@ -1,65 +1,41 @@
 <?php
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
 
-require('../../../../wp-load.php');
-
-
-$str = ($_POST['formData']);
-
-
-
-function parseString($str) {
-    $pairs = explode('&', $str);
-    $result = array();
-    foreach ($pairs as $pair) {
-        $keyValue = explode('=', $pair);
-        $key = $keyValue[0];
-        $value = $keyValue[1];
-        if (!isset($result[$key])) {
-            $result[$key] = array();
-        }
-        array_push($result[$key], $value);
+function db_handle(){
+    if(!isset($_POST['is_submitted'])){
+        return;
     }
-    return $result;
+    set_data_to_db($_POST);
 }
 
 
-$array = parseString($str);
+function set_data_to_db($post_array){
 
-print_r ($array);
 
-if (isset($array['set_posttypes'][0]) || isset($array['set_userroles'][0]) ){
-$posts = ($array['set_posttypes']);
-$user = ($array['set_userroles']);
-
-var_dump ($posts);
-var_dump ($user);
-set_settings($posts, 'set_posttypes', 'set_posttypes');
-set_settings($user, 'set_userroles', 'set_userroles');
-} else {
-$changed = ($array['changes'][0]);
-$quantity = ($array['quantity'][0]);
-$loadlimit = ($array['loadlimit'][0]);
-$period = ($array['period'][0]);
-
-set_settings($changed, 'change_box',"");
-    set_settings($quantity, 'max_view',"");
-    set_settings($period, 'check_period',"");
-    set_settings($loadlimit, 'load_limit', "");
+    if (isset($post_array['set_posttypes'][0]) || isset($post_array['set_userroles'][0]) ){
+        set_settings($post_array['set_posttypes'], 'set_posttypes', 'set_posttypes');
+        set_settings($post_array['set_userroles'], 'set_userroles', 'set_userroles');
+    } else {
+        set_settings($post_array['quantity'], 'max_view',"");
+        set_settings($post_array['period'], 'check_period',"");
+        set_settings($post_array['loadlimit'], 'load_limit', "");
+        if(!isset($post_array['changes'])){
+            set_settings(' ', 'change_box',"");
+        }else{
+        set_settings($post_array['changes'], 'change_box',"");
+        }
+    }
 }
 
-
-// setup function save Post to db $array = $_POST, $key = DB Key and $value = word to replace with nothing
-function set_settings($array, $key, $value){
+// setup function save Post to db $post_array = $_POST, $key = DB Key and $value = word to replace with nothing
+function set_settings($post_array, $key, $value){
     
-    if(is_array($array)){
-    $string = implode("; ", $array);
+    if(is_array($post_array)){
+    $string = implode("; ", $post_array);
 
     $string = str_replace($value, '', $string);
     } else{
-    $string = $array;
+    $string = $post_array;
     }
     $user_id = get_current_user_id();
     global $wpdb;
@@ -70,10 +46,5 @@ function set_settings($array, $key, $value){
         ['user_ID'  => $user_id] 
     );
 }
-
-
-
-
-
 
 ?>
