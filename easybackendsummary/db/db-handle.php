@@ -12,9 +12,9 @@ function db_handle(){
 function set_data_to_db($post_array){
 
 
-    if (isset($post_array['set_posttypes'][0]) || isset($post_array['set_userroles'][0]) ){
-        set_settings($post_array['set_posttypes'], 'set_posttypes', 'set_posttypes');
-        set_settings($post_array['set_userroles'], 'set_userroles', 'set_userroles');
+    if (isset($post_array['post_types'][0]) || isset($post_array['user_roles'][0]) ){
+        set_settings($post_array['post_types'], 'post_types', 'post_types');
+        set_settings($post_array['user_roles'], 'user_roles', 'user_roles');
     } else {
         set_settings($post_array['quantity'], 'max_view',"");
         set_settings($post_array['period'], 'check_period',"");

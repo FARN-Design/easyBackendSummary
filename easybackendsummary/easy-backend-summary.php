@@ -24,13 +24,6 @@
 function farn_enqueueScriptsAndStyles(): void
 {
     wp_enqueue_script('easy-backend-summary-script', plugin_dir_url(__FILE__) . 'js/easy-backend-summary.js', array('jquery'), '', true);
-
-    //TODO Can be removed because you dont use ajax
-    wp_localize_script( 'easy-backend-summary-script', 'ebsum_ajax_data',[
-        'ebsum_url' => plugin_dir_url(__FILE__) . 'db/db-handle.php',
-        'nonce' => wp_create_nonce('ebsum_nonce')
-    ]);
-
     wp_enqueue_style('easy-backend-summary-style', plugin_dir_url(__FILE__) . 'css/easy-backend-summary.css');
 }
 
@@ -64,57 +57,35 @@ register_deactivation_hook(__FILE__, 'drop_table_in_database');
  *
  * @return string with the checkboxes for user_roles and post_types.
  */
-function create_post_type_setting($types, string $name, $roles, string $role_names): string
+function create_post_type_setting($data_array): string
 {
 
     $user_id = get_current_user_id();
     $posttype_setting   = '<ul class="ebs-ul"><form class="ebsum-class" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
-    $posttype_setting  .= '<strong>Post Types</strong>';
     $posttype_setting  .= '<input type="hidden" name="is_submitted" value="is_submitted"></input>';
-    $to_check_posts     = get_db_data($name);
-    $to_check_roles     = get_db_data($role_names);
+    
+    foreach($data_array as $key => $data_type){
+        $is_checkbox_checked     = get_db_data($key);
+        $posttype_setting  .= '<strong>'.$key.'</strong>';
 
-    //TODO can be combined with the duplicate starting at 98. To do that you can combine the arrays types and roles
-    foreach ($types as $type) {
-        $type = trim($type);
-
-        $checked = "";
-        foreach ($to_check_posts as $check) {
-            $check = trim($check);
-            if ($type == $check) {
-                $checked = "checked";
-                break;
+        foreach($data_type as $data){
+            $data = trim($data);
+            $checked = "";
+            foreach ($is_checkbox_checked  as $to_check) {
+                $to_check = trim($to_check);
+                if ($data== $to_check) {
+                    $checked = "checked";
+                    break;
+                }
             }
+            $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $data. '" name="' . $key . '[]" value="' . $data. '"' . $checked . '>';
+            $posttype_setting .= '<label for="postytpe' . $data. '">' . $data. '</label></li>';
+
+            if (isset($_POST[$data])) {
+                echo "'" . $data. "is checked'<br>";
+            };
         }
-
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $type . '" name="' . $name . '[]" value="' . $type . '"' . $checked . '>';
-        $posttype_setting .= '<label for="postytpe' . $type . '">' . $type . '</label></li>';
-
-        if (isset($_POST[$type])) {
-            echo "'" . $type . "is checked'<br>";
-        };
     }
-    $posttype_setting .= "<br> <strong>User roles</strong>";
-    foreach ($roles as $role) {
-        $role = trim($role);
-
-        $checked = "";
-        foreach ($to_check_roles as $check) {
-            $check = trim($check);
-            if ($role == $check) {
-                $checked = "checked";
-                break;
-            }
-        }
-
-        $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $role . '" name="' . $role_names . '[]" value="'. $role . '"' . $checked . '>';
-        $posttype_setting .= '<label for="postytpe' . $role . '">' . $role . '</label></li>';
-
-        if (isset($_POST[$role])) {
-            echo "'" . $role . "is checked'<br>";
-        };
-    }
-
     $posttype_setting .= '</form></ul>';
     $posttype_setting .= '<div class="ebsum_button_wrapper"><input form="' . $user_id . '" class="button button-primary ebsum_button" type="submit" name=" " value="Speichern"></div><br>';
 
@@ -123,25 +94,23 @@ function create_post_type_setting($types, string $name, $roles, string $role_nam
 
 /**
  * This function get the selected posttypes and userroles from custom database table and show in wp backend.
- *
- * @return array with the selected userrolles and posttypes. //TODO you define here that you return an array but in this function nothing is returned, just printed with echo.
  */
 function setup_posts_and_users(): void
 {
-    $types = get_post_types();
+    $post_types = get_post_types();
     global $wp_roles;
     $roles = $wp_roles->roles;
-    $slug_array=array();
+    $user_slugs=array();
     foreach ($roles as $role_slug => $role) {
-        $slug_array[]=$role_slug;
+        $user_slugs[]=$role_slug;
     }
-    echo create_post_type_setting($types, "set_posttypes", $slug_array, "set_userroles");
+    $data_array = array("post_types"=>$post_types, "user_roles"=>$user_slugs);
+    
+    echo create_post_type_setting($data_array);
 }
 
 /**
  * This function set the user id and the now time in unix timestamp to the custom database table.
- *
- * @return array or string with unix timestamp and user id. //TODO you define here that you return an array but in this function nothing is returned
  */
 function set_last_login(): void
 {
@@ -183,8 +152,6 @@ function set_last_login(): void
 
 /**
  * This function get the selected settings from the wp backend and wiill get by the js.
- *
- * @return array with the selected settings from wp backend. //TODO you define here that you return an array but in this function nothing is returned, just printed.
  */
 function main_settings(): void
 {
@@ -258,19 +225,15 @@ function main_settings(): void
 
 //-----------------------------get data from db and return---------------------------------
 
-/**TODO this description is wrong because it only returns all values stored for a given key
- * This function get all data from the custom database table.
+/** This Function return all values stored for a given key
  *
- * @param string $key TODO Write description
- *
- * @return array with all settings, selected userroles and posttypes form the custom table.
+ *@return string $key with all settings, selected userroles and posttypes form the custom table.
  */
 function get_db_data($key):array
 {
     $user_id = get_current_user_id();
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
-    //TODO dynamic implementation and rename datas
     $datas = $wpdb->get_row("SELECT `$key` FROM `$ebsum` WHERE `user_ID` = $user_id");
     $datas = (array)$datas;
     $datas = implode(";", $datas);
@@ -319,11 +282,11 @@ function check_period(): string
 /**
  * This function get the selected posttype data from database.
  *
- * @return string in list with the selected posttypes. //TODO you say that you return a string but you return nothing and just echo stuff.
+ * echo string with the selected posttypes.
  */
 function show_posts(): void
 {
-    $to_check = get_db_data('set_posttypes');
+    $to_check = get_db_data('post_types');
 
     if ($to_check[0]) {
         echo "<div><h3><strong>Posttypes</strong></h3>";
@@ -336,10 +299,10 @@ function show_posts(): void
         $changed = get_db_data('change_box')[0];
         if ($changed == 'changes') {
             $orderby = "post_modified";
-            $label = true; //TODO Rename labe to state like name. "ShowLable"
+            $schow_label = true; //TODO Rename labe to state like name. "ShowLable"
         } else {
             $orderby = "post_date";
-            $label = false;
+            $schow_label = false;
         }
 
         //TODO Rename check to checked_post_type
@@ -359,10 +322,10 @@ function show_posts(): void
                 ),
             );
             $post_query = new WP_Query($args);
-            //TODO $foundPosts = $post_query->found_posts;
+            $foundPosts = $post_query->found_posts;
 
             if ($post_query->have_posts()) {
-                echo '<div class="showheadline"><h4>' . ucfirst($checked) . '</h4><span class="countlabel">' . $post_query->found_posts . '</span></div>';
+                echo '<div class="showheadline"><h4>' . ucfirst($checked) . '</h4><span class="countlabel">' . $foundPosts . '</span></div>';
                 echo '<ul class="ebsum_show_list">';
                 $count = 0;
                 while ($post_query->have_posts()) {
@@ -372,18 +335,16 @@ function show_posts(): void
                     } else {
                         echo '<li class="hiddenposts" id="hideposts"><span>';
                     }
-                    //TODO check if that works
-                    //check if label is set to show the post date or the modfied date of post
-                    if ($label) {
+                    //check if schow_label is set to show the post date or the modfied date of post
+                    if ($schow_label) {
                         echo get_the_modified_date();
                     } else {
                         echo get_the_date();
                     }
                     echo '</span>';
 
-                    //check if label is set to show the new or change label. is not then every post is set to new
-                    //TODO fix names
-                    if ($label) {
+                    //check if schow_label is set to show the new or change schow_label. is not then every post is set to new
+                    if ($schow_label) {
                         if (get_the_modified_date() == get_the_date()) {
                             echo '<span class="changelabelnew">neu</span>';
 
@@ -420,15 +381,14 @@ function show_posts(): void
 }
 
 /**
- * This function get the selected userroles data from database.
+ * This function get the selected userroles data from database and echo it.
  *
- * @return list with the selected userrolles. TODO list is not a type maybe you mean an array? but your functions returns void anyways
  */
 function show_user(): void
 {
 
 
-    $to_check = get_db_data('set_userroles');
+    $to_check = get_db_data('user_roles');
     $max_view = get_db_data('max_view')[0];
     $limit = get_db_data('load_limit')[0];
     $start = check_period();
@@ -507,7 +467,10 @@ function show_user(): void
 
 //-----------------------------display the functions with meta box in wp backend---------------------------------
 
-//TODO Description
+/**
+ * This function displays in the meta box to show the value of all functions in widget
+ *
+ */
 function meta_callback_function(): void
 {
     set_last_login();
