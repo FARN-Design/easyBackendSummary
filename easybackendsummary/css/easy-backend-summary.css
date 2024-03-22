@@ -23,7 +23,7 @@
     justify-content: space-between;
 }
 
-.setting_categories_wrapper{
+.ebsum_setting_categories_wrapper{
     cursor: pointer;
 }
 
@@ -51,14 +51,14 @@
   padding: 4px 12px;
 }
 
-.showheadline{
+.ebsum_showheadline{
     display: flex;
 }
 
 
 /*----------- countlabel styles ---------*/
 
-.countlabel{
+.ebsum_countlabel{
     border: 1px solid lightcoral;
     border-radius: 55px;
     background-color: lightcoral;
@@ -73,7 +73,7 @@
 }
 
 
-.countlabel.zero{
+.ebsum_countlabel.ebsum_zero{
     border: 1px solid lightgray;
     background-color: lightgrey;
     color: darkgray;
@@ -82,7 +82,7 @@
 
 /*----------- changelabel styles ---------*/
 
-.changelabelchange{
+.ebsum_change_label{
     border: 1px solid lightgreen;
     border-radius: 55px;
     background-color: lightgreen;
@@ -92,7 +92,7 @@
     font-weight: bold;
     line-height: initial;
 }
-.changelabelnew{
+.ebsum_new_label{
     border: 1px solid lightblue;
     border-radius: 55px;
     background-color: lightblue;
@@ -116,11 +116,11 @@
 
 /*----------- setting styles ---------*/
 
-.setting_main{
+.ebsum_setting_main{
     display: block;
 }
 
-.load_warning{
+.ebsum_load_warning{
     color: red;
     display: none;
 }
@@ -142,12 +142,12 @@
 }
 
 
-.setting_posttypes{
+.ebsum_setting_posttypes{
     padding: 0 2.5% 2.5% 2.5%;
     display: none;
 }
 
-.setting_wrapper_wrapper{
+.ebsum_setting_wrapper_wrapper{
     padding:  2.5% 2.5% 0 2.5%;
     display: flex;
     justify-content: space-between;
@@ -155,16 +155,16 @@
     align-items: center;
 }
 
-.showmorepostbutton{
+.ebsum_showmorepostbutton{
     margin-bottom: -17px;
     margin-top: -7px;
 }
 
-#hideposts{
+#ebsum_hideposts{
     display: none;
 }
 
-#showmoreposts{
+#ebsum_showmoreposts{
     border: none;
     text-align: center;
     background-color: unset;
@@ -174,7 +174,7 @@
 
 }
 
-#showlessposts{
+#ebsum_showlessposts{
     border: none;
     text-align: center;
     background-color: unset;
@@ -183,19 +183,19 @@
     margin-left: 50%;
 }
 
-.showmore{
+.ebsum_showmore{
     display: grid !important;
 }
 
-.showbutton {
+.ebsum_showbutton {
     display: block !important;
 }
 
-.hidebutton {
+.ebsum_hidebutton {
     display: none !important;
 }
 
-li.settingslist{
+li.ebsum_settingslist{
     display: grid;
     grid-template-columns: 180px auto;
     background: none !important;
