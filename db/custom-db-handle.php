@@ -2,6 +2,7 @@
 
 /** check if form is submitted and start to write the settings to custom table
  *
+ * @return void
  */
 function db_handle(): void {
 	if ( ! isset( $_POST['is_submitted'] ) ) {
@@ -13,7 +14,7 @@ function db_handle(): void {
 
 /** check the _POST for key and give to the db function
  *
- * @param
+ * @param $post_array array of the post data
  *
  * @return void
  */
@@ -27,8 +28,8 @@ function set_data_to_db( $post_array ): void {
 		set_settings( $post_array['period'], 'check_period', "" );
 		set_settings( $post_array['loadlimit'], 'load_limit', "" );
 		if ( ! isset( $post_array['changes'] ) ) {
-			//TODO Prüfen und wenn nötig mit " " dokumentieren!
-			set_settings( ' ', 'change_box', "" );
+			//set empty string to change_box in db if the checkbox of change is not set
+			set_settings( '', 'change_box', "" );
 		} else {
 			set_settings( $post_array['changes'], 'change_box', "" );
 		}
@@ -38,9 +39,9 @@ function set_data_to_db( $post_array ): void {
 
 /** setup function save Post to db $post_array = $_POST, $key = DB Key and $value = word to replace with nothing
  *
- * @param $post_array
- * @param $key
- * @param $value
+ * @param $post_array array of the post data
+ * @param $key string of the key for the db
+ * @param $value substring wich were deleted
  *
  * @return void
  */

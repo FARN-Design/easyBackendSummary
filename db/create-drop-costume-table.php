@@ -2,6 +2,8 @@
 
 /**
  * This function will create the sql command to CREATE the custom table for the Plugin Settings
+ * 
+ * @return void
  */
 function create_database(): void
 {
@@ -27,6 +29,8 @@ function create_database(): void
 
 /**
  * This function will create the sql command to DROP the custom table for the Plugin Settings
+ * 
+ * @return void
  */
 function drop_table_in_database(): void
 {

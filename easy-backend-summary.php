@@ -14,7 +14,6 @@
  require 'db/create-drop-costume-table.php';
  require 'settings/settings.php';
  require 'db/wp-db-handle.php';
- //require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 //-----------------------------initializing-----------------------------
 

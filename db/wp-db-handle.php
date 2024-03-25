@@ -41,7 +41,7 @@ function check_period(): string {
 /**
  * This function get the selected posttype data from database.
  *
- * echo string with the selected postTypes.
+ * @return void
  */
 function show_posts(): void {
 	$to_check = get_db_data( 'post_types' );
@@ -131,6 +131,7 @@ function show_posts(): void {
 /**
  * This function get the selected user roles data from database and echo it.
  *
+ * @return void
  */
 function show_user(): void {
 	$to_check = get_db_data( 'user_roles' );

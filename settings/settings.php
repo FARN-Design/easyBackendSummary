@@ -2,6 +2,8 @@
 /**
  * Create function for looping the trough the array and make for each value an checkbox in an table and checked if selected before
  *
+ *  @param $data_array with all post types and user roles
+ * 
  * @return string with the checkboxes for user_roles and post_types.
  */
 function create_post_type_setting($data_array): string
@@ -41,6 +43,9 @@ function create_post_type_setting($data_array): string
 
 /**
  * This function get the selected posttypes and userroles from custom database table and show in wp backend.
+ * 
+ * @return void
+ * 
  */
 function setup_posts_and_users(): void
 {
@@ -58,6 +63,9 @@ function setup_posts_and_users(): void
 
 /**
  * This function set the user id and the now time in unix timestamp to the custom database table.
+ * 
+ * @return void
+ * 
  */
 function set_last_login(): void
 {
@@ -99,6 +107,9 @@ function set_last_login(): void
 
 /**
  * This function get the selected settings from the wp backend and will get by the js.
+ * 
+ * @return void
+ * 
  */
 function main_settings(): void
 {
