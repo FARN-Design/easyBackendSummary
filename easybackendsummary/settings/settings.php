@@ -11,11 +11,11 @@ function create_post_type_setting($data_array): string
     $posttype_setting   = '<ul class="ebs-ul"><form class="ebsum_checkbox_list" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
     $posttype_setting  .= '<input type="hidden" name="is_submitted" value="is_submitted"></input>';
     
-    foreach($data_array as $key => $data_type){
-        $is_checkbox_checked     = get_db_data($key);
-        $posttype_setting  .= '<strong>'.$key.'</strong>';
+    foreach($data_array as $data_type => $data_type_data){
+        $is_checkbox_checked     = get_db_data($data_type);
+        $posttype_setting  .= '<strong>'.$data_type.'</strong>';
 
-        foreach($data_type as $data){
+        foreach($data_type_data as $data){
             $data = trim($data);
             $checked = "";
             foreach ($is_checkbox_checked  as $to_check) {
@@ -25,7 +25,7 @@ function create_post_type_setting($data_array): string
                     break;
                 }
             }
-            $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $data. '" name="' . $key . '[]" value="' . $data. '"' . $checked . '>';
+            $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $data. '" name="' . $data_type . '[]" value="' . $data. '"' . $checked . '>';
             $posttype_setting .= '<label for="postytpe' . $data. '">' . $data. '</label></li>';
 
             if (isset($_POST[$data])) {
@@ -98,7 +98,7 @@ function set_last_login(): void
 
 
 /**
- * This function get the selected settings from the wp backend and wiill get by the js.
+ * This function get the selected settings from the wp backend and will get by the js.
  */
 function main_settings(): void
 {
@@ -127,16 +127,16 @@ function main_settings(): void
                 <br></li>
 
             <li class="ebsum_settingslist"><label class="ebsum_quantity" for="quantity">Overview:</label>
-                <input type="number" min="1" max="100" name="quantity" step="1" id="ebsum_quantitys" default="3"
+                <input type="number" min="1" max="100" name="quantity" step="1" id="ebsum_quantitys"
                        value="<?php echo $max_view[0]; ?>">
                 <br></li>
 
             <li class="ebsum_settingslist"><label class="ebsum_loadlimit" for="loadlimit">Limit to load:</label>
-                <input type="number" min="1" max="100" name="loadlimit" step="1" id="ebsum_loadlimits" default="10"
+                <input type="number" min="1" max="100" name="loadlimit" step="1" id="ebsum_loadlimits"
                        value="<?php echo $load_limit[0]; ?>">
                 <br></li>
 
-            <p class="ebsum_load_warning">Please chose a value or overview wich is smaler than limit to load!</p>
+            <p class="ebsum_load_warning">Please choose a value or overview wich is smaller than limit to load!</p>
 
             <li class="ebsum_settingslist"><p>Period to show</p>
                 <select class="ebsum_period_time" name="period" id="periods">
@@ -161,7 +161,7 @@ function main_settings(): void
                     </option>
                 </select><br></li>
 
-            <input type="hidden" name="is_submitted" value="is_submitted"></input>
+            <input type="hidden" name="is_submitted" value="is_submitted">
             <input type="submit" value="save" class="button button-primary">
             </ul>
     </form>

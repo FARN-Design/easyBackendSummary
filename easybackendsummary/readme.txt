@@ -1,10 +1,10 @@
 === Easy Backend Summary ===
-Contributors: farm - digital brand design, Björn Staack, Marvin Taube, Robert Drost
-Tags: Monitor, activity, summary, overview, post types, user roles, widget, dashboard
-Requires at least: ??
+Contributors: farm - digital brand design
+Tags: Activity, Overview, Posts, Users, Dashboard
+Requires at least: 6.0
 Tested up to: 6.4.3
-Requires PHP: 7.0
-Stable tag: ??
+Requires PHP: 8.2
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

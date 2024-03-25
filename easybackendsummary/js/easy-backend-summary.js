@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
 
 
-    // functio to show or hide the Settings and scroll to elemt if shown
+    // function to show or hide the Settings and scroll to element if shown
     $('#ebsum_setting_button').click(function () {
         $('.ebsum_setting_wrapper').toggle();
         $([document.documentElement, document.body]).animate({
@@ -11,14 +11,14 @@ jQuery(document).ready(function ($) {
     });
 
     
-    // functio to show or hide the posttype-settings and scroll to elemt if shown
+    // function to show or hide the posttype-settings and scroll to element if shown
     $('.ebsum_setting_categories_wrapper').click(function () {
         $('.ebsum_setting_posttypes').toggle();
 
     });
 
 
-    // function to display alert if load limit is smaler then quantity and disable the submit function
+    // function to display alert if load limit is smaller than quantity and disable the submit function
     $("#ebsum_main_settings").on('submit',function(e) {
         e.preventDefault();
         var quantity = parseInt($('#ebsum_quantitys').val());
@@ -33,7 +33,7 @@ jQuery(document).ready(function ($) {
     });
     
 
-    // functtion to show more or less list objects
+    // function to show more or less list objects
     $('.ebsum_showmoreposts').click(function(){
         $(this).addClass('ebsum_hidebutton');
         $(this).closest('ul').find('.ebsum_hiddenposts').addClass('ebsum_showmore');
