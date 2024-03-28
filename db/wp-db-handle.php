@@ -31,8 +31,8 @@ function check_period(): string {
 
 	return match ( $period ) {
 		'lastlogin' => gmdate( $default_date_format, $timestamp ),
-		'lastweek' => date( $default_date_format, strtotime( '-7 day' ) ),
-		'lastmonth' => date( $default_date_format, strtotime( '-30 day' ) ),
+		'lastweek' => gmdate( $default_date_format, strtotime( '-7 day' ) ),
+		'lastmonth' => gmdate( $default_date_format, strtotime( '-30 day' ) ),
 		default => "0000-00-00" //Show all results (whole-time)
 	};
 }
@@ -59,7 +59,9 @@ function show_posts(): void {
 			$orderBy     = "post_date";
 			$show_label = false;
 		}
-		echo "<div><h3><strong>PostTypes</strong></h3>";
+		?>
+		<div><h3><strong>PostTypes</strong></h3>
+		<?php
 		foreach ( $to_check as $checked ) {
 			$checked    = trim( $checked );
 			$args       = array(
@@ -79,52 +81,74 @@ function show_posts(): void {
 			$foundPosts = $post_query->found_posts;
 
 			if ( $post_query->have_posts() ) {
-				echo '<div class="ebsum_showheadline"><h4>' . ucfirst( $checked ) . '</h4><span class="ebsum_countlabel">' . $foundPosts . '</span></div>';
-				echo '<ul class="ebsum_show_list">';
+				?>
+				<div class="ebsum_showheadline"><h4><?php echo esc_html(ucfirst($checked));?></h4><span class="ebsum_countlabel"><?php echo esc_html($foundPosts);?></span></div>
+				<ul class="ebsum_show_list">
+				<?php
 				$count = 0;
 				while ( $post_query->have_posts() ) {
 					$post_query->the_post();
 					if ( $count < $max_view ) {
-						echo '<li><span>';
+						?>
+						<li><span>
+						<?php
 					} else {
-						echo '<li class="ebsum_hiddenposts" id="ebsum_hideposts"><span>';
+						?>
+						<li class="ebsum_hiddenposts" id="ebsum_hideposts"><span>
+						<?php
 					}
 					//check if show_label is set to show the post date or the modified date of post
 					if ( $show_label ) {
-						echo get_the_modified_date();
+						echo esc_html(get_the_modified_date());
 					} else {
-						echo get_the_date();
+						echo esc_html(get_the_date());
 					}
-					echo '</span>';
+					?>
+					</span>
+					<?php
 					//check if show_label is set to show the new or change show_label. is not then every post is set to new
 					if ( $show_label ) {
 						if ( get_the_modified_date() == get_the_date() ) {
-							echo '<span class="ebsum_new_label">new</span>';
-
+							?>
+							<span class="ebsum_new_label">new</span>
+							<?php
 						} else {
-							echo '<span class="ebsum_change_label">change</span>';
+							?>
+							<span class="ebsum_change_label">change</span>
+							<?php
 						}
 					} else {
-						echo '<span class="ebsum_new_label">new</span>';
+						?>
+						<span class="ebsum_new_label">new</span>
+						<?php
 					}
-
-					echo '<a href="' . get_permalink() . '">' . esc_html( get_the_title() ) . '</a></li>';
+					?>
+					<a href="<?php echo esc_html(get_permalink());?>"><?php echo esc_html(get_the_title());?></a></li>
+					<?php
 					$count ++;
 				}
-				if ( $post_query->found_posts > $max_view ) {
-					echo '<div class="ebsum_showmorepostbutton">
+				if ( $post_query->found_posts > $max_view && $max_view < $limit) {
+					?>
+					<div class="ebsum_showmorepostbutton">
                     <button type=button id="ebsum_showmoreposts" class="ebsum_showmoreposts">▼</button>
                     <button type=button id="ebsum_showlessposts" class="ebsum_showlessposts">▲</button>
-                    </div>';
+                    </div>
+					<?php
 				}
-				echo '<br></ul>';
+				?>
+				<br></ul>
+				<?php
 
 			} else {
-				echo '<div class="ebsum_showheadline"><h4>' . ucfirst( $checked ) . '</h4><span class="ebsum_countlabel ebsum_zero">0</span></div>';
-				echo '<ul class="ebsum_show_list" id="ebsum_' . $checked . '"></ul>';
+				?>
+				<div class="ebsum_showheadline"><h4><?php echo esc_html(ucfirst( $checked ));?></h4><span class="ebsum_countlabel ebsum_zero">0</span></div>
+				<ul class="ebsum_show_list" id="ebsum_' . $checked . '"></ul>
+				<?php
 			}
 		}
-		echo '</div>';
+		?>
+		</div>
+		<?php
 	}
 }
 
@@ -140,7 +164,9 @@ function show_user(): void {
 	$start    = check_period();
 
 	if ( $to_check[0] ) {
-		echo "<div><h3><strong>User Roles</strong></h3>";
+		?>
+		<div><h3><strong>User Roles</strong></h3>
+		<?php
 
 		foreach ( $to_check as $checked ) {
 			$checked = trim( $checked );
@@ -159,45 +185,56 @@ function show_user(): void {
 			$users   = new WP_User_Query( $args );
 
 			if ( ! empty( $users->get_results() ) ) {
-				echo '<div class="ebsum_showheadline"><h4>' . ucfirst( $checked ) . '</h4><span class="ebsum_countlabel">' . $users->get_total() . '</span></div>';
-				echo '<ul class="ebsum_show_list">';
+				?>
+				<div class="ebsum_showheadline"><h4><?php echo esc_html(ucfirst( $checked ));?></h4><span class="ebsum_countlabel"><?php echo esc_html($users->get_total());?></span></div>
+				<ul class="ebsum_show_list">
+				<?php
 				$count = 0;
 				foreach ( $users->get_results() as $user ) {
 
 					if ( $count < $max_view ) {
-						echo '<li>
-                                <span>' . date( "d M Y", strtotime( esc_html( $user->user_registered ) ) ) . '</span>
-                                <span> </span>
-                                <a href="users.php?s=' . $user->user_email . '">' . esc_html( $user->display_name ) . ' [' . esc_html( $user->user_email ) . '] ' . esc_html( $user->user_url ) . '</a>
-                              </li>';
+						?>
+						<li>
+							<span><?php echo esc_html(gmdate( "d M Y", strtotime( esc_html( $user->user_registered ) ) ));?></span>
+							<span> </span>
+							<a href="users.php?s=' . $user->user_email . '"><?php echo esc_html($user->display_name);?> [<?php echo esc_html( $user->user_email );?>]<?php echo esc_html($user->user_url );?></a>
+						</li>
+						<?php
 
 					} else {
-
-						echo '<li class="ebsum_hiddenposts" id="ebsum_hideposts">
-                            
-                            <span>' . date( "d M Y", strtotime( esc_html( $user->user_registered ) ) ) . '</span>
-
-                            <span> </span>
-
-                            <a href="users.php?s=' . $user->user_email . '">' . esc_html( $user->display_name ) . ' [' . esc_html( $user->user_email ) . '] ' . esc_html( $user->user_url ) . '</a></li>';
+						?>
+						<li class="ebsum_hiddenposts" id="ebsum_hideposts">
+							<span><?php echo esc_html(gmdate( "d M Y", strtotime( esc_html( $user->user_registered ) ) ));?></span>
+							<span> </span>
+							<a href="users.php?s=' . $user->user_email . '"><?php echo esc_html($user->display_name);?> [<?php echo esc_html( $user->user_email );?>]<?php echo esc_html($user->user_url );?></a>
+						</li>
+						<?php
 
 					}
 					$count ++;
 				}
-				if ( $users->get_total() > $max_view ) {
-					echo '<div class="ebsum_showmorepostbutton">
-                            <button type=button id="ebsum_showmoreposts" class="ebsum_showmoreposts">▼</button>
-                            <button type=button id="ebsum_showlessposts" class="ebsum_showlessposts">▲</button>
-                            </div>';
+				if ( $users->get_total() > $max_view && $max_view < $limit) {
+					?>
+					<div class="ebsum_showmorepostbutton">
+						<button type=button id="ebsum_showmoreposts" class="ebsum_showmoreposts">▼</button>
+						<button type=button id="ebsum_showlessposts" class="ebsum_showlessposts">▲</button>
+					</div>
+					<?php
 				}
-				echo '<br></ul>';
+				?>
+				<br></ul>
+				<?php
 
 			} else {
-				echo '<div class="ebsum_showheadline"><h4>' . ucfirst( $checked ) . '</h4><span class="ebsum_countlabel ebsum_zero">0</span></div>';
-				echo '<ul class="ebsum_show_list_user" id="ebsum_' . $checked . '"></ul>';
+				?>
+				<div class="ebsum_showheadline"><h4><?php echo esc_html(ucfirst( $checked ));?></h4><span class="ebsum_countlabel ebsum_zero">0</span></div>
+				<ul class="ebsum_show_list_user" id="ebsum_<?php echo esc_html($checked);?>"></ul>
+				<?php
 			}
 		}
-		echo '</div>';
+		?>
+		</div>
+		<?php
 	}
 }
 

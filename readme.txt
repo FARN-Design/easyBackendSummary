@@ -9,7 +9,7 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 
-Easy Backend Summary helps you to keep track of all the important information on your WordPress site. You can create your own individual summary of different post-types and user-roles. Current changes and news are displayed compactly in the time period you have selected 
+This is a dashboard plugin for the WordPress backend who shows a simple overview of the latest post and user activities. 
 
 == Description ==
 
@@ -26,15 +26,15 @@ In contrast to the standard activity widget, the Easy Backend Summary also shows
 
 = Features =
 
-* Selection of all existing content types, also supports costum post-types
-* Selection of all existing user roles, also supports costum user-roles
+* Selection of all existing content types, also supports custom post-types
+* Selection of all existing user roles, also supports custom user-roles
 * Change the monitored period between the last login, 7 days, 30 days and over the entire period 
 * Display of new posts and, if desired, display of changes with corresponding labeling 
 
 = Links =
 * [Website](https://www.easy-wordpress-plugins.com/)
-* [Documentation](todo)
-* [Support](todo)
+* [Documentation](upcomming)
+* [Support](https://www.easy-wordpress-plugins.com/)
 
 == Installation ==
 
@@ -48,7 +48,7 @@ From your WordPress dashboard
 
 
 == Screenshots ==
-Todo
+upcomming
 
 
 == Changelog ==

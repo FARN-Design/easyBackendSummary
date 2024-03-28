@@ -4,19 +4,22 @@
  *
  *  @param $data_array with all post types and user roles
  * 
- * @return string with the checkboxes for user_roles and post_types.
+ * @return void
  */
-function create_post_type_setting($data_array): string
+function create_post_type_setting($data_array):void
 {
 
     $user_id = get_current_user_id();
-    $posttype_setting   = '<ul class="ebs-ul"><form class="ebsum_checkbox_list" ID="' . $user_id . '" method="POST" action="" name="ebsum_set">';
-    $posttype_setting  .= '<input type="hidden" name="is_submitted" value="is_submitted"></input>';
-    
+    ?>
+    <ul class="ebs-ul"><form class="ebsum_checkbox_list" ID="<?php echo esc_html($user_id); ?>" method="POST" action="" name="ebsum_set">
+    <input type="hidden" name="is_submitted" value="is_submitted"></input>
+    <input type="hidden" name="is_post_and_user" value="is_post_and_user"></input>
+    <?php 
     foreach($data_array as $data_type => $data_type_data){
         $is_checkbox_checked     = get_db_data($data_type);
-        $posttype_setting  .= '<strong>'.$data_type.'</strong>';
-
+        ?>
+        <strong><?php echo esc_html($data_type); ?> </strong>
+        <?php 
         foreach($data_type_data as $data){
             $data = trim($data);
             $checked = "";
@@ -27,18 +30,19 @@ function create_post_type_setting($data_array): string
                     break;
                 }
             }
-            $posttype_setting .= '<li><input type="checkbox" id="postytpe' . $data. '" name="' . $data_type . '[]" value="' . $data. '"' . $checked . '>';
-            $posttype_setting .= '<label for="postytpe' . $data. '">' . $data. '</label></li>';
-
+            ?>
+            <li><input type="checkbox" id="postytpe<?php echo esc_html($data); ?>" name="<?php echo esc_html($data_type);?>[]" value="<?php echo esc_html($data);?>"<?php echo esc_html($checked);?>>
+            <label for="postytpe<?php echo esc_html($data);?>"><?php echo esc_html($data);?></label></li>
+            <?php
             if (isset($_POST[$data])) {
-                echo "'" . $data. "is checked'<br>";
+                echo "'" . esc_html($data). "is checked'<br>";
             };
         }
     }
-    $posttype_setting .= '</form></ul>';
-    $posttype_setting .= '<div class="ebsum_button_wrapper"><input form="' . $user_id . '" class="button button-primary ebsum_button" type="submit" name=" " value="save"></div><br>';
-
-    return $posttype_setting;
+    ?>
+    </form></ul>
+    <div class="ebsum_button_wrapper"><input form="<?php echo esc_html($user_id);?>" class="button button-primary ebsum_button" type="submit" name=" " value="save"></div><br>
+    <?php
 }
 
 /**
@@ -47,7 +51,7 @@ function create_post_type_setting($data_array): string
  * @return void
  * 
  */
-function setup_posts_and_users(): void
+function setup_posts_and_users():void
 {
     $post_types = get_post_types();
     global $wp_roles;
@@ -58,7 +62,7 @@ function setup_posts_and_users(): void
     }
     $data_array = array("post_types"=>$post_types, "user_roles"=>$user_slugs);
     
-    echo create_post_type_setting($data_array);
+    create_post_type_setting($data_array);
 }
 
 /**
@@ -69,13 +73,23 @@ function setup_posts_and_users(): void
  */
 function set_last_login(): void
 {
+    // Get the current user ID
     $user_id = get_current_user_id();
+    // Get the current time
     $now = get_user_meta(get_current_user_id(), "wfls-last-login", true);
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
-    $check_user_ID = $wpdb->get_row("SELECT `user_ID` FROM `$ebsum` WHERE `user_ID` = $user_id");
 
-   
+    // Try to get the data from the cache
+    $check_user_ID = wp_cache_get($user_id, 'user_login_data');
+
+    // If the data is not in the cache, get it from the database
+    if ($check_user_ID === false) {
+        $check_user_ID = $wpdb->get_row($wpdb->prepare("SELECT `user_ID` FROM `$ebsum` WHERE `user_ID` = %d", $user_id));
+        // Set the data in the cache
+        wp_cache_set($user_id, $check_user_ID, 'user_login_data');
+    }
+
     if (isset($check_user_ID->user_ID)) {
         if ($check_user_ID->user_ID != $user_id) {
             $wpdb->insert(
@@ -85,13 +99,16 @@ function set_last_login(): void
                     'last_login' => $now,
                 ]
             );
+            // Delete the cache as the data has changed
+            wp_cache_delete($user_id, 'user_login_data');
         } else {
             $wpdb->update(
                 $ebsum,
                 ['last_login' => $now],
                 ['user_ID' => $user_id]
-
             );
+            // Delete the cache as the data has changed
+            wp_cache_delete($user_id, 'user_login_data');
         }
     } else {
         $wpdb->insert(
@@ -101,8 +118,11 @@ function set_last_login(): void
                 'last_login' => $now,
             ]
         );
+        // Delete the cache as the data has changed
+        wp_cache_delete($user_id, 'user_login_data');
     }
 }
+
 
 
 /**
@@ -134,17 +154,17 @@ function main_settings(): void
     <form ID="ebsum_main_settings" method="POST">
         <ul class="ebsum_settingslist">
             <li class="ebsum_settingslist"><label for="changes">Show changes</label>
-                <input type="checkbox" id="changes" name="changes" value="changes" <?php echo $checked; ?> >
+                <input type="checkbox" id="changes" name="changes" value="changes" <?php echo esc_html($checked); ?> >
                 <br></li>
 
             <li class="ebsum_settingslist"><label class="ebsum_quantity" for="quantity">Overview:</label>
                 <input type="number" min="1" max="100" name="quantity" step="1" id="ebsum_quantitys"
-                       value="<?php echo $max_view[0]; ?>">
+                       value="<?php echo esc_html($max_view[0]); ?>">
                 <br></li>
 
             <li class="ebsum_settingslist"><label class="ebsum_loadlimit" for="loadlimit">Limit to load:</label>
                 <input type="number" min="1" max="100" name="loadlimit" step="1" id="ebsum_loadlimits"
-                       value="<?php echo $load_limit[0]; ?>">
+                       value="<?php echo esc_html($load_limit[0]); ?>">
                 <br></li>
 
             <p class="ebsum_load_warning">Please choose a value or overview wich is smaller than limit to load!</p>
@@ -152,21 +172,21 @@ function main_settings(): void
             <li class="ebsum_settingslist"><p>Period to show</p>
                 <select class="ebsum_period_time" name="period" id="periods">
                     <option class="ebsum_period_time"
-                            value="<?php echo $last_login ?>" <?php if (trim($period[0]) == $last_login) {
+                            value="<?php echo esc_html($last_login) ?>" <?php if (trim($period[0]) == $last_login) {
                         echo ' selected';
                     } ?>>since last login
                     </option>
                     <option class="ebsum_period_time"
-                            value="<?php echo $last_week ?>" <?php if (trim($period[0]) == $last_week) {
+                            value="<?php echo esc_html($last_week) ?>" <?php if (trim($period[0]) == $last_week) {
                         echo ' selected';
                     } ?>>last 7 days
                     </option>
                     <option class="ebsum_period_time"
-                            value="<?php echo $last_month ?>" <?php if (trim($period[0]) == $last_month) {
+                            value="<?php echo esc_html($last_month) ?>" <?php if (trim($period[0]) == $last_month) {
                         echo ' selected';
                     } ?>>last 30 days
                     </option>
-                    <option class="ebsum_period_time" value="<?php echo $whole_time ?>" <?php if (trim($period[0]) == $whole_time) {
+                    <option class="ebsum_period_time" value="<?php echo esc_html($whole_time) ?>" <?php if (trim($period[0]) == $whole_time) {
                         echo ' selected';
                     } ?>>whole time
                     </option>

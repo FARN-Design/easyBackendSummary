@@ -10,10 +10,10 @@
  License: GPLv3 or later
  */
 
- require 'db/custom-db-handle.php';
- require 'db/create-drop-costume-table.php';
- require 'settings/settings.php';
- require 'db/wp-db-handle.php';
+ require plugin_dir_path(__FILE__) . 'db/custom-db-handle.php';
+ require plugin_dir_path(__FILE__) . 'db/create-drop-custom-table.php';
+ require plugin_dir_path(__FILE__) . 'settings/settings.php';
+ require plugin_dir_path(__FILE__) . 'db/wp-db-handle.php';
 
 //-----------------------------initializing-----------------------------
 
@@ -26,8 +26,8 @@
  */
 function farn_enqueueScriptsAndStyles(): void
 {
-    wp_enqueue_script('easy-backend-summary-script', plugin_dir_url(__FILE__) . 'js/easy-backend-summary.js', array('jquery'), '', true);
-    wp_enqueue_style('easy-backend-summary-style', plugin_dir_url(__FILE__) . 'css/easy-backend-summary.css');
+    wp_enqueue_script('easy-backend-summary-script', plugin_dir_url(__FILE__) . 'js/easy-backend-summary.js', array('jquery'), '1.0.1', true);
+    wp_enqueue_style('easy-backend-summary-style', plugin_dir_url(__FILE__) . 'css/easy-backend-summary.css', array(),'1.0.1');
 }
 add_action('admin_enqueue_scripts', 'farn_enqueueScriptsAndStyles');
 
@@ -49,12 +49,11 @@ function easy_backend_summary(): void
     );
 }
 
-//db_handle callback is in the custom-db-handle.php
 add_action('wp_dashboard_setup', 'db_handle');
 add_action('wp_dashboard_setup', 'easy_backend_summary');
 
-register_activation_hook(__FILE__, 'create_database');
-register_deactivation_hook(__FILE__, 'drop_table_in_database');
+register_activation_hook(__FILE__, 'create_ebsum_database');
+register_deactivation_hook(__FILE__, 'drop_ebsum_table_in_database');
 
 //-----------------------------display the functions with meta box in wp backend---------------------------------
 

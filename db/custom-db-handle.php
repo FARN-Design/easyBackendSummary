@@ -9,6 +9,7 @@ function db_handle(): void {
 		return;
 	}
 	set_data_to_db( $_POST );
+	
 }
 
 
@@ -20,10 +21,19 @@ function db_handle(): void {
  */
 function set_data_to_db( $post_array ): void {
 
-	if ( isset( $post_array['post_types'][0] ) || isset( $post_array['user_roles'][0] ) ) {
+	if (isset($post_array['post_types'][0]) && isset( $post_array['user_roles'][0])) {
 		set_settings( $post_array['post_types'], 'post_types', 'post_types' );
 		set_settings( $post_array['user_roles'], 'user_roles', 'user_roles' );
-	} else {
+	} elseif(isset( $post_array['user_roles'][0]) && !isset( $post_array['post_types'][0])){
+		set_settings( $post_array['user_roles'], 'user_roles', 'user_roles' );
+		set_settings( '', 'post_types', 'post_types' );
+	}elseif(!isset( $post_array['user_roles'][0]) && isset( $post_array['post_types'][0])){
+		set_settings( $post_array['post_types'], 'post_types', 'post_types' );
+		set_settings( '', 'user_roles', 'user_roles' );
+	}elseif(!isset( $post_array['user_roles'][0]) && !isset( $post_array['post_types'][0]) && isset( $post_array['is_post_and_user'][0])){
+		set_settings( '', 'post_types', 'post_types' );
+		set_settings( '', 'user_roles', 'user_roles' );
+	}else {
 		set_settings( $post_array['quantity'], 'max_view', "" );
 		set_settings( $post_array['period'], 'check_period', "" );
 		set_settings( $post_array['loadlimit'], 'load_limit', "" );
