@@ -5,7 +5,7 @@
  * 
  * @return void
  */
-function create_ebsum_database(): void
+function ebsum_create_ebsum_database(): void
 {
     global $wpdb;
     $ebsum = $wpdb->prefix . 'easyBackendSummary';
@@ -32,7 +32,7 @@ function create_ebsum_database(): void
  * 
  * @return void
  */
-function drop_ebsum_table_in_database(): void
+function ebsum_drop_ebsum_table_in_database(): void
 {
     global $wpdb;
 $ebsum = esc_sql($wpdb->prefix . 'easyBackendSummary');

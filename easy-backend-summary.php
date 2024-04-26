@@ -7,13 +7,15 @@
  Author: Farn - Digital Brand Design
  Version: 1.0.1
  Author URI: https://farn.de
- License: GPLv3 or later
+ License: GPLv3
  */
 
- require plugin_dir_path(__FILE__) . 'db/custom-db-handle.php';
- require plugin_dir_path(__FILE__) . 'db/create-drop-custom-table.php';
- require plugin_dir_path(__FILE__) . 'settings/settings.php';
- require plugin_dir_path(__FILE__) . 'db/wp-db-handle.php';
+if ( ! defined( 'ABSPATH' ) ) (exit);
+
+require plugin_dir_path(__FILE__) . 'db/custom-db-handle.php';
+require plugin_dir_path(__FILE__) . 'db/create-drop-custom-table.php';
+require plugin_dir_path(__FILE__) . 'settings/settings.php';
+require plugin_dir_path(__FILE__) . 'db/wp-db-handle.php';
 
 //-----------------------------initializing-----------------------------
 
@@ -42,14 +44,14 @@ function easy_backend_summary(): void
     add_meta_box(
         'easy_backend_summary',
         'Easy Backend Summary',
-	    'metaBox_callback_function',
+	    'ebsum_metaBox_callback_function',
         'dashboard',
         'normal',
         'high'
     );
 }
 
-add_action('wp_dashboard_setup', 'db_handle');
+add_action('wp_dashboard_setup', 'ebsum_db_handle');
 add_action('wp_dashboard_setup', 'easy_backend_summary');
 
 register_activation_hook(__FILE__, 'create_ebsum_database');
@@ -63,13 +65,13 @@ register_deactivation_hook(__FILE__, 'drop_ebsum_table_in_database');
  *
  * @return void
  */
-function metaBox_callback_function(): void
+function ebsum_metaBox_callback_function(): void
 {
-    set_last_login(); ?>
+    ebsum_set_last_login(); ?>
     <div class="ebsum_wrapper">
         <div class="ebsum_show_wrapper">
-            <?php show_posts(); ?>
-            <?php show_user(); ?>
+            <?php ebsum_show_posts(); ?>
+            <?php ebsum_show_user(); ?>
         </div>
         <div class="ebsum_setting_wrapper_wrapper">
             <span class="ebsum_setting_categories_wrapper">+ Add new categories</span>
@@ -77,11 +79,11 @@ function metaBox_callback_function(): void
             </button>
         </div>
         <div class="ebsum_setting_posttypes"> 
-            <?php setup_posts_and_users(); ?>
+            <?php ebsum_setup_posts_and_users(); ?>
         </div>
         <div class="ebsum_setting_wrapper">
             <div class="ebsum_setting_main">
-                <?php main_settings(); ?>
+                <?php ebsum_main_settings(); ?>
             </div>
         </div>
     </div>

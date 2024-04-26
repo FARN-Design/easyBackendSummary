@@ -6,7 +6,7 @@
  * 
  * @return void
  */
-function create_post_type_setting($data_array):void
+function ebsum_create_post_type_setting($data_array):void
 {
 
     $user_id = get_current_user_id();
@@ -16,7 +16,7 @@ function create_post_type_setting($data_array):void
     <input type="hidden" name="is_post_and_user" value="is_post_and_user"></input>
     <?php 
     foreach($data_array as $data_type => $data_type_data){
-        $is_checkbox_checked     = get_db_data($data_type);
+        $is_checkbox_checked     = ebsum_get_db_data($data_type);
         ?>
         <strong><?php echo esc_html($data_type); ?> </strong>
         <?php 
@@ -51,7 +51,7 @@ function create_post_type_setting($data_array):void
  * @return void
  * 
  */
-function setup_posts_and_users():void
+function ebsum_setup_posts_and_users():void
 {
     $post_types = get_post_types();
     global $wp_roles;
@@ -62,7 +62,7 @@ function setup_posts_and_users():void
     }
     $data_array = array("post_types"=>$post_types, "user_roles"=>$user_slugs);
     
-    create_post_type_setting($data_array);
+    ebsum_create_post_type_setting($data_array);
 }
 
 /**
@@ -71,7 +71,7 @@ function setup_posts_and_users():void
  * @return void
  * 
  */
-function set_last_login(): void
+function ebsum_set_last_login(): void
 {
     // Get the current user ID
     $user_id = get_current_user_id();
@@ -131,19 +131,19 @@ function set_last_login(): void
  * @return void
  * 
  */
-function main_settings(): void
+function ebsum_main_settings(): void
 {
 
     
     //function to set change view
-    $max_view   = get_db_data('max_view');
-    $load_limit  = get_db_data('load_limit');
-    $period     = get_db_data('check_period');
+    $max_view   = ebsum_get_db_data('max_view');
+    $load_limit  = ebsum_get_db_data('load_limit');
+    $period     = ebsum_get_db_data('check_period');
     $last_login  = "lastlogin";
     $last_week   = "lastweek";
     $last_month  = "lastmonth";
     $whole_time      = "whole_time";
-    $changed     = get_db_data('change_box')[0];
+    $changed     = ebsum_get_db_data('change_box')[0];
     $checked    = "";
 
     if ($changed == 'changes') {

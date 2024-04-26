@@ -5,12 +5,14 @@
  *
  * @return string[] $key with all settings, selected userRoles and postTypes form the custom table.
  */
-function get_db_data( string $key ): array {
+function ebsum_get_db_data( string $key ): array {
 	$user_id = get_current_user_id();
 	global $wpdb;
 	$ebsum = $wpdb->prefix . 'easyBackendSummary';
 
-	$data = $wpdb->get_row( "SELECT `$key` FROM `$ebsum` WHERE `user_ID` = $user_id" );
+	// $data = $wpdb->get_row( "SELECT `$key` FROM `$ebsum` WHERE `user_ID` = $user_id" );
+	$query_data = $wpdb->prepare("SELECT %i FROM %i WHERE `user_ID` = %s", array($key, $ebsum, $user_id));
+	$data = $wpdb->get_row($query_data);
 	$data = (array) $data;
 	$data = implode( ";", $data );
 	$data = trim( $data );
@@ -24,9 +26,9 @@ function get_db_data( string $key ): array {
  *
  * @return string with the current period as Date representation.
  */
-function check_period(): string {
-	$timestamp           = get_db_data( 'last_login' )[0];
-	$period              = get_db_data( 'check_period' )[0];
+function ebsum_check_period(): string {
+	$timestamp           = ebsum_get_db_data( 'last_login' )[0];
+	$period              = ebsum_get_db_data( 'check_period' )[0];
 	$default_date_format = get_option( 'date_format' );
 
 	return match ( $period ) {
@@ -43,14 +45,14 @@ function check_period(): string {
  *
  * @return void
  */
-function show_posts(): void {
-	$to_check = get_db_data( 'post_types' );
+function ebsum_show_posts(): void {
+	$to_check = ebsum_get_db_data( 'post_types' );
 
 	if ( $to_check[0] ) {
-		$limit    = get_db_data( 'load_limit' )[0];
-		$max_view = get_db_data( 'max_view' )[0];
-		$changed  = get_db_data( 'change_box' )[0];
-		$start    = check_period();
+		$limit    = ebsum_get_db_data( 'load_limit' )[0];
+		$max_view = ebsum_get_db_data( 'max_view' )[0];
+		$changed  = ebsum_get_db_data( 'change_box' )[0];
+		$start    = ebsum_check_period();
 
 		if ( $changed == 'changes' ) {
 			$orderBy     = "post_modified";
@@ -157,11 +159,11 @@ function show_posts(): void {
  *
  * @return void
  */
-function show_user(): void {
-	$to_check = get_db_data( 'user_roles' );
-	$max_view = get_db_data( 'max_view' )[0];
-	$limit    = get_db_data( 'load_limit' )[0];
-	$start    = check_period();
+function ebsum_show_user(): void {
+	$to_check = ebsum_get_db_data( 'user_roles' );
+	$max_view = ebsum_get_db_data( 'max_view' )[0];
+	$limit    = ebsum_get_db_data( 'load_limit' )[0];
+	$start    = ebsum_check_period();
 
 	if ( $to_check[0] ) {
 		?>

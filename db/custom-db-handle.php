@@ -4,11 +4,12 @@
  *
  * @return void
  */
-function db_handle(): void {
+function ebsum_db_handle(): void {
 	if ( ! isset( $_POST['is_submitted'] ) ) {
 		return;
 	}
-	set_data_to_db( $_POST );
+	
+	ebsum_set_data_to_db();
 	
 }
 
@@ -19,29 +20,29 @@ function db_handle(): void {
  *
  * @return void
  */
-function set_data_to_db( $post_array ): void {
-
-	if (isset($post_array['post_types'][0]) && isset( $post_array['user_roles'][0])) {
-		set_settings( $post_array['post_types'], 'post_types', 'post_types' );
-		set_settings( $post_array['user_roles'], 'user_roles', 'user_roles' );
-	} elseif(isset( $post_array['user_roles'][0]) && !isset( $post_array['post_types'][0])){
-		set_settings( $post_array['user_roles'], 'user_roles', 'user_roles' );
-		set_settings( '', 'post_types', 'post_types' );
-	}elseif(!isset( $post_array['user_roles'][0]) && isset( $post_array['post_types'][0])){
-		set_settings( $post_array['post_types'], 'post_types', 'post_types' );
-		set_settings( '', 'user_roles', 'user_roles' );
-	}elseif(!isset( $post_array['user_roles'][0]) && !isset( $post_array['post_types'][0]) && isset( $post_array['is_post_and_user'][0])){
-		set_settings( '', 'post_types', 'post_types' );
-		set_settings( '', 'user_roles', 'user_roles' );
+function ebsum_set_data_to_db(): void {
+	
+	if (isset($_POST['post_types'][0]) && isset($_POST['user_roles'][0])) {
+		ebsum_set_settings( sanitize_key($_POST['post_types']), 'post_types', 'post_types' );
+		ebsum_set_settings( sanitize_key($_POST['user_roles']), 'user_roles', 'user_roles' );
+	} elseif(isset( $_POST['user_roles'][0]) && !isset( $_POST['post_types'][0])){
+		ebsum_set_settings( sanitize_key($_POST['user_roles']), 'user_roles', 'user_roles' );
+		ebsum_set_settings( '', 'post_types', 'post_types' );
+	}elseif(!isset( $_POST['user_roles'][0]) && isset($_POST['post_types'][0])){
+		ebsum_set_settings( sanitize_key($_POST['post_types']), 'post_types', 'post_types' );
+		ebsum_set_settings( '', 'user_roles', 'user_roles' );
+	}elseif(!isset( $_POST['user_roles'][0]) && !isset( $_POST['post_types'][0]) && isset( $_POST['is_post_and_user'][0])){
+		ebsum_set_settings( '', 'post_types', 'post_types' );
+		ebsum_set_settings( '', 'user_roles', 'user_roles' );
 	}else {
-		set_settings( $post_array['quantity'], 'max_view', "" );
-		set_settings( $post_array['period'], 'check_period', "" );
-		set_settings( $post_array['loadlimit'], 'load_limit', "" );
-		if ( ! isset( $post_array['changes'] ) ) {
+		ebsum_set_settings( sanitize_key($_POST['quantity']), 'max_view', "" );
+		ebsum_set_settings( sanitize_key($_POST['period']), 'check_period', "" );
+		ebsum_set_settings( sanitize_key($_POST['loadlimit']), 'load_limit', "" );
+		if ( ! isset( $_POST['changes']) )  {
 			//set empty string to change_box in db if the checkbox of change is not set
-			set_settings( '', 'change_box', "" );
+			ebsum_set_settings( '', 'change_box', "" );
 		} else {
-			set_settings( $post_array['changes'], 'change_box', "" );
+			ebsum_set_settings( sanitize_key($_POST['changes']), 'change_box', "" );
 		}
 	}
 }
@@ -55,7 +56,7 @@ function set_data_to_db( $post_array ): void {
  *
  * @return void
  */
-function set_settings( $post_array, $key, $value ): void {
+function ebsum_set_settings( $post_array, $key, $value ): void {
 
 	if ( is_array( $post_array ) ) {
 		$string = implode( "; ", $post_array );
