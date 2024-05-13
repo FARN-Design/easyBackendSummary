@@ -2,11 +2,11 @@
 /**
  * Create function for looping the trough the array and make for each value an checkbox in an table and checked if selected before
  *
- * @param $data_array with all post types and user roles
+ * @param $data_array array with all post types and user roles
  *
  * @return void
  */
-function ebsum_create_post_type_setting( $data_array ): void {
+function ebsum_create_post_type_setting( array $data_array ): void {
 
 	$user_id = get_current_user_id();
 	?>

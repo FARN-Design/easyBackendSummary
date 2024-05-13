@@ -15,8 +15,6 @@ function ebsum_db_handle(): void {
 
 /** check the _POST for key and give to the db function
  *
- * @param $post_array array of the post data
- *
  * @return void
  */
 function ebsum_set_data_to_db(): void {
@@ -49,13 +47,13 @@ function ebsum_set_data_to_db(): void {
 
 /** setup function save Post to db $post_array = $_POST, $key = DB Key and $value = word to replace with nothing
  *
- * @param $post_array array of the post data
+ * @param $post_array array|string of the post data
  * @param $key string of the key for the db
- * @param $value substring wich were deleted
+ * @param $value string wich were deleted
  *
  * @return void
  */
-function ebsum_set_settings( $post_array, $key, $value ): void {
+function ebsum_set_settings( array|string $post_array, string $key, string $value ): void {
 
 	if ( is_array( $post_array ) ) {
 		$string = implode( "; ", $post_array );
