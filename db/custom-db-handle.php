@@ -5,12 +5,11 @@
  * @return void
  */
 function ebsum_db_handle(): void {
-	if ( ! isset( $_POST['is_submitted'] ) ) {
+	if ( ! isset( $_POST['is_submitted'])) {
 		return;
 	}
-	
+	//check_admin_referer();
 	ebsum_set_data_to_db();
-	
 }
 
 
@@ -21,7 +20,7 @@ function ebsum_db_handle(): void {
  * @return void
  */
 function ebsum_set_data_to_db(): void {
-	
+
 	if (isset($_POST['post_types'][0]) && isset($_POST['user_roles'][0])) {
 		ebsum_set_settings( sanitize_key($_POST['post_types']), 'post_types', 'post_types' );
 		ebsum_set_settings( sanitize_key($_POST['user_roles']), 'user_roles', 'user_roles' );

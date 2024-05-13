@@ -2,7 +2,7 @@
 
 /*
  Plugin Name: Easy Backend Summary
- Plugin URI: https://www.easy-wordpress-plugins.de/
+ Plugin URI: https://farn.de
  Description: This is a dashboard plugin for the WordPress backend who shows a easy summary of the latest activity's
  Author: Farn - Digital Brand Design
  Version: 1.0.1
@@ -26,12 +26,12 @@ require plugin_dir_path(__FILE__) . 'db/wp-db-handle.php';
  *
  * @return void
  */
-function farn_enqueueScriptsAndStyles(): void
+function ebsum_enqueueScriptsAndStyles(): void
 {
     wp_enqueue_script('easy-backend-summary-script', plugin_dir_url(__FILE__) . 'js/easy-backend-summary.js', array('jquery'), '1.0.1', true);
     wp_enqueue_style('easy-backend-summary-style', plugin_dir_url(__FILE__) . 'css/easy-backend-summary.css', array(),'1.0.1');
 }
-add_action('admin_enqueue_scripts', 'farn_enqueueScriptsAndStyles');
+add_action('admin_enqueue_scripts', 'ebsum_enqueueScriptsAndStyles' );
 
 
 /**
@@ -39,7 +39,7 @@ add_action('admin_enqueue_scripts', 'farn_enqueueScriptsAndStyles');
  *
  * @return void
  */
-function easy_backend_summary(): void
+function ebsum_easy_backend_summary(): void
 {
     add_meta_box(
         'easy_backend_summary',
@@ -52,10 +52,10 @@ function easy_backend_summary(): void
 }
 
 add_action('wp_dashboard_setup', 'ebsum_db_handle');
-add_action('wp_dashboard_setup', 'easy_backend_summary');
+add_action('wp_dashboard_setup', 'ebsum_easy_backend_summary' );
 
-register_activation_hook(__FILE__, 'create_ebsum_database');
-register_deactivation_hook(__FILE__, 'drop_ebsum_table_in_database');
+register_activation_hook(__FILE__, 'ebsum_create_ebsum_database');
+register_deactivation_hook(__FILE__, 'ebsum_drop_ebsum_table_in_database');
 
 //-----------------------------display the functions with meta box in wp backend---------------------------------
 
