@@ -2,7 +2,7 @@
 
 /*
  Plugin Name: Easy Backend Summary
- Plugin URI: https://farn.de
+ Plugin URI: https://github.com/FARN-Design/easyBackendSummary
  Description: This is a dashboard plugin for the WordPress backend who shows a easy summary of the latest activity's
  Author: Farn - Digital Brand Design
  Version: 1.0.1
