@@ -6,11 +6,11 @@
  */
 function ebsum_db_handle(): void {
 
-	if ( ! isset( $_POST['is_submitted'])) {
+	if ( ! isset( $_POST['is_submitted']) || !check_admin_referer()) {
 		return;
+	} else {
+		ebsum_set_data_to_db();
 	}
-	//check_admin_referer();
-	ebsum_set_data_to_db();
 }
 
 
