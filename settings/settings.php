@@ -13,7 +13,7 @@ function ebsum_create_post_type_setting( array $data_array ): void {
     <ul class="ebs-ul">
         <form class="ebsum_checkbox_list" ID="<?php echo esc_html( $user_id ); ?>" method="POST" action=""
               name="ebsum_set">
-            <?php wp_nonce_field()?>
+            <?php wp_nonce_field("ebsum_nonce")?>
             <input type="hidden" name="is_submitted" value="is_submitted">
             <input type="hidden" name="is_post_and_user" value="is_post_and_user">
 			<?php
@@ -201,7 +201,7 @@ function ebsum_main_settings(): void {
                     </option>
                 </select><br></li>
 
-			<?php wp_nonce_field() ?>
+			<?php wp_nonce_field("ebsum_nonce") ?>
 
             <input type="hidden" name="is_submitted" value="is_submitted">
             <input type="submit" value="save" class="button button-primary">

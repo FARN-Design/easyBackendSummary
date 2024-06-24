@@ -5,6 +5,10 @@
  *
  * @return string[] $key with all settings, selected userRoles and postTypes form the custom table.
  */
+
+if ( ! defined( 'ABSPATH' ) ) (exit);
+
+
 function ebsum_get_db_data( string $key ): array {
 	$user_id = get_current_user_id();
 	global $wpdb;

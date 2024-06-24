@@ -1,12 +1,14 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) (exit);
+
 /** check if form is submitted and start to write the settings to custom table
  *
  * @return void
  */
 function ebsum_db_handle(): void {
 
-	if ( ! isset( $_POST['is_submitted']) || !check_admin_referer()) {
+	if ( ! isset( $_POST['is_submitted']) || !check_admin_referer("ebsum_nonce")) {
 		return;
 	} else {
 		ebsum_set_data_to_db();

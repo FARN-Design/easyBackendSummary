@@ -1,5 +1,7 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) (exit);
+
 //Todo looks like it that this needs to be required, because the dbDelta function is defined there!
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 

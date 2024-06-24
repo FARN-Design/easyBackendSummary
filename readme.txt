@@ -2,7 +2,7 @@
 Contributors: farm - digital brand design
 Tags: Activity, Overview, Posts, Users, Dashboard
 Requires at least: 6.0
-Tested up to: 6.4.3
+Tested up to: 6.5
 Requires PHP: 8.2
 Stable tag: 1.0.1
 License: GPLv3
