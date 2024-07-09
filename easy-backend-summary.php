@@ -1,13 +1,13 @@
 <?php
 
 /*
- Plugin Name: Easy Backend Summary
- Plugin URI: https://github.com/FARN-Design/easyBackendSummary
- Description: This is a dashboard plugin for the WordPress backend who shows a easy summary of the latest activity's
- Author: Farn - Digital Brand Design
- Version: 1.0.2
- Author URI: https://farn.de
- License: GPLv3
+Plugin Name: Easy Backend Summary
+Plugin URI: https://github.com/FARN-Design/easyBackendSummary
+Description: This is a dashboard plugin for the WordPress backend who shows a easy summary of the latest activity's
+Author: Farn - Digital Brand Design
+Version: 1.0.2
+Author URI: https://farn.de
+License: GPLv3
  */
 
 if ( ! defined( 'ABSPATH' ) ) (exit);
