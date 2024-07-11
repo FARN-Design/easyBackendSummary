@@ -1,5 +1,5 @@
 === Easy Backend-Summary ===
-Contributors: Farn – Digital Brand Design
+Contributors: farndesign
 Tags: Activity, Overview, Posts, Users, Dashboard
 Requires at least: 6.0
 Tested up to: 6.5
