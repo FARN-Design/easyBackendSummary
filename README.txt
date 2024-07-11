@@ -1,9 +1,9 @@
-=== Easy Backend Summary ===
-Contributors: farn.de
+=== Easy Backend-Summary ===
+Contributors: Farn – Digital Brand Design
 Tags: Activity, Overview, Posts, Users, Dashboard
 Requires at least: 6.0
-Tested up to: 6.5
-Requires PHP: 8.2
+Tested up to: 8.2
+Requires PHP: 6.5
 Stable tag: 1.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ This is a dashboard plugin for the WordPress backend who shows a simple overview
 
 == Description ==
 
-Easy Backend Summary helps you to keep track of all the important information on your WordPress site. You can create your own individual summary of different post-types and user-roles. Current changes and news are displayed compactly in the time period you have selected 
+Easy Backend-Summary helps you to keep track of all the important information on your WordPress site. You can create your own individual summary of different post-types and user-roles. Current changes and news are displayed compactly in the time period you have selected 
 
 Easy to set up without programming 
 Individual overview for each backend user 
@@ -21,7 +21,7 @@ Always keep an eye on changes to different post-types
 Recognize bots and spam users immediately
 Select the desired time period you want to keep track of 
 
-In contrast to the standard activity widget, the Easy Backend Summary also shows you new users and changes to posts. You decide what you want to see, how much and over what period of time. Everything in a simple display in the WordPress dashboard as a widget. 
+In contrast to the standard activity widget, the Easy Backend-Summary also shows you new users and changes to posts. You decide what you want to see, how much and over what period of time. Everything in a simple display in the WordPress dashboard as a widget. 
 
 
 = Features =
@@ -41,8 +41,8 @@ In contrast to the standard activity widget, the Easy Backend Summary also shows
 From your WordPress dashboard
 
 1. **Visit** Plugins > Add New
-2. **Search** for "Easy Backend Summary"
-3. **Install and Activate** Easy Backend Summary from your Plugins page
+2. **Search** for "Easy Backend-Summary"
+3. **Install and Activate** Easy Backend-Summary from your Plugins page
 4. **Click** on the dashboard and chose the post-types and user-roles you want to monitor and set the period and the amount.
 5. **Start** to monitor your Wordpress Site.
 
