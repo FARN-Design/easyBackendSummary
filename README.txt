@@ -1,5 +1,5 @@
 === Easy Backend Summary ===
-Contributors: farm - digital brand design
+Contributors: farn.de
 Tags: Activity, Overview, Posts, Users, Dashboard
 Requires at least: 6.0
 Tested up to: 6.5
@@ -48,7 +48,9 @@ From your WordPress dashboard
 
 
 == Screenshots ==
-upcomming
+1. Summary of posts and users
+2. Settings of the categories
+3. Settings of the mount of users and posts
 
 
 == Changelog ==
