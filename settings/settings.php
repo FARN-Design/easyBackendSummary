@@ -161,43 +161,43 @@ function ebsum_main_settings(): void {
 	?>
     <form ID="ebsum_main_settings" method="POST">
         <ul class="ebsum_settingslist">
-            <li class="ebsum_settingslist"><label for="changes">Show changes</label>
+            <li class="ebsum_settingslist"><label for="changes"><?php _e('Show changes', 'easybackendsummary')?></label>
                 <input type="checkbox" id="changes" name="changes" value="changes" <?php echo esc_html( $checked ); ?> >
                 <br></li>
 
-            <li class="ebsum_settingslist"><label class="ebsum_quantity" for="quantity">Overview:</label>
+            <li class="ebsum_settingslist"><label class="ebsum_quantity" for="quantity"><?php _e('Overview', 'easybackendsummary')?>:</label>
                 <input type="number" min="1" max="100" name="quantity" step="1" id="ebsum_quantitys"
                        value="<?php echo esc_html( $max_view[0] ); ?>">
                 <br></li>
 
-            <li class="ebsum_settingslist"><label class="ebsum_loadlimit" for="loadlimit">Limit to load:</label>
+            <li class="ebsum_settingslist"><label class="ebsum_loadlimit" for="loadlimit"><?php _e('Limit to load', 'easybackendsummary')?>:</label>
                 <input type="number" min="1" max="100" name="loadlimit" step="1" id="ebsum_loadlimits"
                        value="<?php echo esc_html( $load_limit[0] ); ?>">
                 <br></li>
 
-            <p class="ebsum_load_warning">Please choose a value or overview wich is smaller than limit to load!</p>
+            <p class="ebsum_load_warning"><?php _e('Please choose a value or overview wich is smaller than limit to load', 'easybackendsummary')?>!</p>
 
-            <li class="ebsum_settingslist"><p>Period to show</p>
+            <li class="ebsum_settingslist"><p><?php _e('Period to show', 'easybackendsummary')?></p>
                 <select class="ebsum_period_time" name="period" id="periods">
                     <option class="ebsum_period_time"
                             value="<?php echo esc_html( $last_login ) ?>" <?php if ( trim( $period[0] ) == $last_login ) {
 						echo ' selected';
-					} ?>>since last login
+					} ?>><?php _e('since last login', 'easybackendsummary')?>
                     </option>
                     <option class="ebsum_period_time"
                             value="<?php echo esc_html( $last_week ) ?>" <?php if ( trim( $period[0] ) == $last_week ) {
 						echo ' selected';
-					} ?>>last 7 days
+					} ?>><?php _e('last 7 days', 'easybackendsummary')?>
                     </option>
                     <option class="ebsum_period_time"
                             value="<?php echo esc_html( $last_month ) ?>" <?php if ( trim( $period[0] ) == $last_month ) {
 						echo ' selected';
-					} ?>>last 30 days
+					} ?>><?php _e('last 30 days', 'easybackendsummary')?>
                     </option>
                     <option class="ebsum_period_time"
                             value="<?php echo esc_html( $whole_time ) ?>" <?php if ( trim( $period[0] ) == $whole_time ) {
 						echo ' selected';
-					} ?>>whole time
+					} ?>><?php _e('whole time', 'easybackendsummary')?>
                     </option>
                 </select><br></li>
 

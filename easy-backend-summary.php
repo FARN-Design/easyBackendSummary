@@ -1,13 +1,14 @@
 <?php
 
 /*
-Plugin Name: Easy Backend Summary
+Plugin Name: Easy Backend-Summary
 Plugin URI: https://github.com/FARN-Design/easyBackendSummary
 Description: This is a dashboard plugin for the WordPress backend who shows a easy summary of the latest activity's
 Author: Farn - Digital Brand Design
 Version: 1.0.2
 Author URI: https://farn.de
 License: GPLv3
+Text Domain: easybackendsummary
  */
 
 if ( ! defined( 'ABSPATH' ) ) (exit);
@@ -74,7 +75,7 @@ function ebsum_metaBox_callback_function(): void
             <?php ebsum_show_user(); ?>
         </div>
         <div class="ebsum_setting_wrapper_wrapper">
-            <span class="ebsum_setting_categories_wrapper">+ Add new categories</span>
+            <span class="ebsum_setting_categories_wrapper"><?php _e('+ Add new categories', 'easybackendsummary')?></span>
             <button type="button" id="ebsum_setting_button"><span class="dashicons dashicons-admin-generic"></span>
             </button>
         </div>

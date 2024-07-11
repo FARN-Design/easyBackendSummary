@@ -116,16 +116,16 @@ function ebsum_show_posts(): void {
 					if ( $show_label ) {
 						if ( get_the_modified_date() == get_the_date() ) {
 							?>
-							<span class="ebsum_new_label">new</span>
+							<span class="ebsum_new_label"><?php _e('news', 'easybackendsummary')?></span>
 							<?php
 						} else {
 							?>
-							<span class="ebsum_change_label">change</span>
+							<span class="ebsum_change_label"><?php _e('changes', 'easybackendsummary')?></span>
 							<?php
 						}
 					} else {
 						?>
-						<span class="ebsum_new_label">new</span>
+						<span class="ebsum_new_label"><?php _e('new', 'easybackendsummary')?></span>
 						<?php
 					}
 					?>
