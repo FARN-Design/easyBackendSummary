@@ -32,9 +32,9 @@ In contrast to the standard activity widget, the Easy Backend-Summary also shows
 * Display of new posts and, if desired, display of changes with corresponding labeling 
 
 = Links =
-* [Website](https://www.easy-wordpress-plugins.com/)
+* [Website](https://www.farnlabs.com/)
 * [Documentation](upcomming)
-* [Support](https://www.easy-wordpress-plugins.com/)
+* [Support](https://www.farnlabs.com/)
 
 == Installation ==
 
