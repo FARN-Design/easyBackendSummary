@@ -2,9 +2,9 @@
 Contributors: farndesign
 Tags: Activity, Overview, Posts, Users, Dashboard
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.0.1
+Stable tag: 1.0.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
